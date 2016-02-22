@@ -1,0 +1,48 @@
+<!DOCTYPE HTML>
+<html lang="zh">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+
+    <title>HLS&HTML5播放器Demo</title>
+	<style type="text/css">
+		#progress {width:600px;border:1px solid #ccc;background:#fff;height:10px;overflow:hidden;cursor:pointer;}
+		#progress-bar {width:0px;background:#ccc;overflow:hidden;height:10px;}
+
+		.volume {width:50px;height:20px;background:red;cursor:pointer;text-align:center;margin-top:10px;line-height:20px;}
+		.clickBtn {width:100px;height:100px;background:red;position:absolute;left:50%;top:200px;margin-left:-50px;display:none;}
+	</style>
+</head>
+<body>
+
+    <div class="container well fadeInDown animated" style="width:640px;margin:0 auto;">
+			<div class="clickBtn" id="screenBtn"></div>
+            <div id="video-ctn" class="col-md-12"></div>
+            <div id="video-control" class="col-md-12">
+                <div class="col-md-1">
+                    <button class="btn btn-primary mdi-av-pause" id="play">暂停</button>
+                </div>
+                <div class="col-md-9">
+                    <div id="progress">
+                        <div id="progress-bar"></div>
+                    </div>
+                </div>
+                <div class="col-md-2">
+                    <div id="time">00:00/00:00</div>
+                </div>
+				<div id="currentVoice"></div>
+				<div class="volume" id="voiceAdd">+</div>
+				<div class="volume" id="voiceM">-</div>
+				<div class="volume" id="voiceMute">静音</div>
+            </div>
+    </div>
+
+
+	<div id="log" style="width:500px;height:100px;border:1px solid #ccc;position:fixed;right:20px;top:20px;background:#fff;padding:10px;word-wrap:break-word;"></div>
+</body>
+
+<script type="text/javascript" src="player.js"></script>
+<script type="text/javascript" src="main.js"></script>
+
+
+</html>
