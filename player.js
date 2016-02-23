@@ -433,8 +433,10 @@
         if (me.canvas.width !== this.videoWidth || me.canvas.height !== this.videoHeight) {
           me.options.onLoadedMetaData && me.options.onLoadedMetaData(me.canvas)
         }
-
-
+		me.currentVideo["pause"]();
+		if (me.options.playPauseCallBack){
+			me.options.playPauseCallBack(me.currentVideo.paused)
+		}
       };
 
       var onTimeUpdate = function() {
