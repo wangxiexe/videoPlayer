@@ -59,9 +59,8 @@
 
 - `isLive` 是否是直播
 
-- `defaultResolution` 默认分辨率
-
-
+- `defaultResolution` 默认容器的宽高，视频文件会按这个的大小来自动适配
+- 
 - `playPauseButton` 播放、暂停的切换按钮
 
 - `progressCtn` 进度容器id,可以用css控制外边的边框，以及背景等样式
@@ -94,6 +93,7 @@
 - `sendLogCallBack`  当有错误时，获取到返回的信息
 - `breakTime`  从第几秒开始播放int类型
 - `screenBtn`  全屏点击的按钮ID
+- `specifiedResolution`  自定义分辨率
 
 ###声音控制
 	//示例

@@ -285,8 +285,9 @@
           .split(/\r?\n/)
           .filter(RegExp.prototype.test.bind(/^\#EXT-X-RESOLUTION:/))[0];
         //如果服务端没有给出分辨率，就采用配置参数
-        me.resolution ? me.resolution = me.resolution.split(":")[1] : me.resolution = me.options.defaultResolution;
-        me.resolution = me.options.defaultResolution;
+        //me.resolution ? me.resolution = me.resolution.split(":")[1] : me.resolution = me.options.defaultResolution;
+        //me.resolution = me.options.defaultResolution;
+		me.resolution =me.options.specifiedResolution ? me.options.specifiedResolution: me.resolution.split(":")[1]
         me.realWidth = parseInt(me.resolution.split("x")[0]);
         me.realHeight = parseInt(me.resolution.split("x")[1]);
         me.setDrawVideoProperty();

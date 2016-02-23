@@ -121,6 +121,7 @@
             isLoop         : false,
             isLive         : false,
             defaultResolution: "640x480",
+			specifiedResolution : "600x600",
             playPauseButton: "play",
 			screenBtn:"screenBtn",
             progressCtn    : "progress",
