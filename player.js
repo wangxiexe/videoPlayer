@@ -286,6 +286,7 @@
           .filter(RegExp.prototype.test.bind(/^\#EXT-X-RESOLUTION:/))[0];
         //如果服务端没有给出分辨率，就采用配置参数
         me.resolution ? me.resolution = me.resolution.split(":")[1] : me.resolution = me.options.defaultResolution;
+        me.resolution = me.options.defaultResolution;
         me.realWidth = parseInt(me.resolution.split("x")[0]);
         me.realHeight = parseInt(me.resolution.split("x")[1]);
         me.setDrawVideoProperty();
@@ -724,7 +725,7 @@
 
     nextFrame: function() {
       var willDrawVideoProperty = this.willDrawVideoProperty;
-      if (this.currentVideo.paused || this.currentVideo.ended) {
+      if (!this.currentVideo || this.currentVideo.paused || this.currentVideo.ended) {
         return;
       }
       this.context.drawImage(this.currentVideo, willDrawVideoProperty.l, willDrawVideoProperty.t, willDrawVideoProperty.w, willDrawVideoProperty.h);
@@ -854,7 +855,7 @@
     },
 
     getID: function(id) {
-      return typeof id == "string" ? document.getElementById(id) : id;
+      return typeof id == "string" ? top.document.getElementById(id) : id;
     },
 
     startSendHeartBeat: function() {
