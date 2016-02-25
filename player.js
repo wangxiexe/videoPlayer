@@ -590,6 +590,7 @@
     },
 
     destroy: function() {
+	  this.heartBeatTimer && clearInterval(this.heartBeatTimer);
       if (this.canvasLoading) this.canvasLoading = null;
       for (var i = 0; i < this.videos.length; i++) {
         if (this.videos[i]) {
