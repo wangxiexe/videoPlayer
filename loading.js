@@ -259,7 +259,7 @@
 
       try {
         this.imageData[frame] = (
-          this._.getImageData(0, 0, this.fullWidth, this.fullWidth)
+          this._.getImageData(0, 0, this.fullWidth, this.fullHeight)
         );
       } catch (e) {}
 

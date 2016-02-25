@@ -126,7 +126,7 @@
 			screenBtn:"screenBtn",
             progressCtn    : "progress",
             progressBar    : "progress-bar",
-			breakTime	   : 20,
+			breakTime	   : 0,
             playPauseCallBack: function(isPaused){
                 if (isPaused){
                     document.getElementById("play").innerHTML="播放";

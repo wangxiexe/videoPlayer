@@ -341,6 +341,7 @@
           msg: msg
         };
         me.sendLog(info);
+		/*
         var breakTime = me.options.breakTime;
         if (!me.setFirst && breakTime && breakTime < me.totalDuration) {
           me.setFirst = true;
@@ -349,6 +350,7 @@
           me.setVideoStartTime(percent);
           me.bindPlayPauseEvent();
         }
+		*/
 
       };
 
@@ -433,10 +435,6 @@
         if (me.canvas.width !== this.videoWidth || me.canvas.height !== this.videoHeight) {
           me.options.onLoadedMetaData && me.options.onLoadedMetaData(me.canvas)
         }
-		me.currentVideo["pause"]();
-		if (me.options.playPauseCallBack){
-			me.options.playPauseCallBack(me.currentVideo.paused)
-		}
       };
 
       var onTimeUpdate = function() {
@@ -458,6 +456,12 @@
       };
 
       var onPlay = function() {
+		  if(me.nextIndex == 0){
+			me.videos[0]["pause"]();
+			if (me.options.playPauseCallBack){
+				me.options.playPauseCallBack(me.videos[0].paused)
+			}  
+		  }
 
         if (me.segErrTimer) clearInterval(me.segErrTimer);
         if (me.currentVideo !== this) {
@@ -740,39 +744,46 @@
         button = this.playPauseButton;
       if (button) {
         button.addEventListener('click', function() {
-          if (converter.currentVideo.paused)
-            converter.currentVideo["play"]();
-          else
-            converter.currentVideo["pause"]();
-          if (converter.options.playPauseCallBack)
-            converter.options.playPauseCallBack(converter.currentVideo.paused)
+          converter.setPause();
         });
       }
 
       var container = this.container;
       if (container) {
         container.addEventListener('click', function() {
-          if (converter.currentVideo.paused)
-            converter.currentVideo["play"]();
-          else
-            converter.currentVideo["pause"]();
-          if (converter.options.playPauseCallBack)
-            converter.options.playPauseCallBack(converter.currentVideo.paused)
+          converter.setPause();
         });
       }
 
       var screenBtn = this.screenBtn;
       if (screenBtn) {
         screenBtn.addEventListener('click', function() {
-          if (converter.currentVideo.paused)
-            converter.currentVideo["play"]();
-          else
-            converter.currentVideo["pause"]();
-          if (converter.options.playPauseCallBack)
-            converter.options.playPauseCallBack(converter.currentVideo.paused)
+			converter.setPause();
         });
       }
     },
+
+	setPause:function(){
+		var me=this;
+        var breakTime = me.options.breakTime;
+        if (!me.setFirst && breakTime && breakTime < me.totalDuration) {
+          me.setFirst = true;
+          var current = me.options.breakTime;
+          var percent = current / me.totalDuration;
+          me.setVideoStartTime(percent);
+          //me.bindPlayPauseEvent();
+        }
+
+		if (me.currentVideo.paused){
+			me.currentVideo["play"]();
+		}
+		else{
+			me.currentVideo["pause"]();
+		}
+		if (me.options.playPauseCallBack){
+			me.options.playPauseCallBack(me.currentVideo.paused)
+		}
+	},
 
     setMute: function(mute) {
       var videos = this.videos;
