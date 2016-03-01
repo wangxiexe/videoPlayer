@@ -55,6 +55,7 @@
           fps: 20,
           backgroundColor: '#272822',
           fillColor: '#009688',
+		  defaultImage:this.options.defaultImage,
           path: [
             ['arc', this.playWidth / 2, this.playHeight / 2, 30, 0, 360]
           ],
@@ -75,25 +76,8 @@
         this.canvasLoading = new Loading(loadingOption);
         this.container.appendChild(this.canvasLoading.canvas);
         this.canvas = this.canvasLoading.canvas;
-        this.canvasLoading.play();
-
-        this.manifest = this.options.liveUrl;
-        this.context = this.canvas.getContext('2d');
-        this.nextIndex = 0;
-        this.sentVideos = 0;
-        this.currentVideo = null;
-        this.videos = [];
-        this.lastOriginal = 0;
-        this.isBindSeek = false;
-        this.isTriggerSeek = false;
-        this.seekIndex = 0;
-        this.filesInfo = [];
-        this.seekTime = 0;
-        //错误重试变量
-        this.indexErrRetry = 0;
-        this.indexErrTimer = 0;
-
-        this.initLivePlayIndex();
+		//this.doPlay();
+		this.setDefault();
       } else {
         var video = document.createElement('video'),
           me = this,
@@ -167,6 +151,31 @@
         if (this.progressBar) this.progressBar.style.display = "none";
       }
     },
+
+	setDefault:function(){
+		this.canvasLoading.drawDefault();
+		this.bindPlayPauseEvent();
+	},
+
+	doPlay:function(){
+        this.canvasLoading.play();
+        this.manifest = this.options.liveUrl;
+        this.context = this.canvas.getContext('2d');
+        this.nextIndex = 0;
+        this.sentVideos = 0;
+        this.currentVideo = null;
+        this.videos = [];
+        this.lastOriginal = 0;
+        this.isBindSeek = false;
+        this.isTriggerSeek = false;
+        this.seekIndex = 0;
+        this.filesInfo = [];
+        this.seekTime = 0;
+        //错误重试变量
+        this.indexErrRetry = 0;
+        this.indexErrTimer = 0;
+        this.initLivePlayIndex();	
+	},
 
     randomStr: function(max) {
       var randomStr_str = '1234567890abcdefghijklmnopqrstuvwxyzABCDEFGHIGKLMNOPQRSTUVWXYZ';
@@ -341,16 +350,17 @@
           msg: msg
         };
         me.sendLog(info);
-		/*
+		
         var breakTime = me.options.breakTime;
         if (!me.setFirst && breakTime && breakTime < me.totalDuration) {
           me.setFirst = true;
           var current = me.options.breakTime;
           var percent = current / me.totalDuration;
           me.setVideoStartTime(percent);
-          me.bindPlayPauseEvent();
-        }
-		*/
+          //me.bindPlayPauseEvent();
+        }else{
+			me.setFirst=true;
+		}
 
       };
 
@@ -456,19 +466,14 @@
       };
 
       var onPlay = function() {
-		  if(me.nextIndex == 0){
-			me.videos[0]["pause"]();
-			if (me.options.playPauseCallBack){
-				me.options.playPauseCallBack(me.videos[0].paused)
-			}  
-		  }
-
         if (me.segErrTimer) clearInterval(me.segErrTimer);
         if (me.currentVideo !== this) {
           //绑定播放暂停按钮事件
+		  /*
           if (!me.currentVideo) {
             me.bindPlayPauseEvent();
           }
+		  */
 
           if (this.currentTime != 0) {
             this.currentTime = 0;
@@ -766,15 +771,13 @@
 
 	setPause:function(){
 		var me=this;
-        var breakTime = me.options.breakTime;
-        if (!me.setFirst && breakTime && breakTime < me.totalDuration) {
-          me.setFirst = true;
-          var current = me.options.breakTime;
-          var percent = current / me.totalDuration;
-          me.setVideoStartTime(percent);
-          //me.bindPlayPauseEvent();
-        }
-
+		if(!me.setFirst){
+			me.doPlay();
+		if (me.options.playPauseCallBack){
+			me.options.playPauseCallBack(false);
+		}
+			return false;
+		}
 		if (me.currentVideo.paused){
 			me.currentVideo["play"]();
 		}
