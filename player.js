@@ -42,7 +42,7 @@
       this.progressBar = this.getID(this.options.progressBar);
 
       //如果是PC端、非safari、且URL是直播形式URL
-      if (!this.isMobile() && !this.isSafari() && this.options.url === "") {
+      if (!this.isMobile() && this.options.url === "") {
         this.resolution = this.options.defaultResolution;
         this.playWidth = parseInt(this.resolution.split("x")[0]);
         this.playHeight = parseInt(this.resolution.split("x")[1]);
