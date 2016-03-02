@@ -42,7 +42,7 @@
       this.progressBar = this.getID(this.options.progressBar);
 
       //如果是PC端、非safari、且URL是直播形式URL
-      if (!this.isMobile() && this.options.url === "") {
+      if (this.options.url === "") {
         this.resolution = this.options.defaultResolution;
         this.playWidth = parseInt(this.resolution.split("x")[0]);
         this.playHeight = parseInt(this.resolution.split("x")[1]);
@@ -55,7 +55,7 @@
           fps: 20,
           backgroundColor: '#272822',
           fillColor: '#009688',
-		  defaultImage:this.options.defaultImage,
+          defaultImage: this.options.defaultImage,
           path: [
             ['arc', this.playWidth / 2, this.playHeight / 2, 30, 0, 360]
           ],
@@ -76,106 +76,35 @@
         this.canvasLoading = new Loading(loadingOption);
         this.container.appendChild(this.canvasLoading.canvas);
         this.canvas = this.canvasLoading.canvas;
-		//this.doPlay();
-		this.setDefault();
-      } else {
-        var video = document.createElement('video'),
-          me = this,
-          source = document.createElement('source');
-        video.controls = true;
-        source.type = 'video/mp4';
-        video.appendChild(source);
-        video.src = source.src = this.options.hls;
-
-        var onloadstart = function(e) {
-          me.logInfo.loadStartTime = new Date().valueOf();
-        };
-
-        var onloadeddata = function() {};
-
-        var onloaderror = function(e) {
-          var logData = {
-            date: new Date().valueOf(),
-            type: "loaderror",
-            playFailure: "请求数据时发生错误"
-          }
-          me.sendLog(logData)
-        };
-
-        var ontimeupdate = function(e) {};
-
-        var onseeked = function(e) {
-          //得到数据
-          if (this.readyState !== 1) {
-            me.logInfo.startSeek = false;
-          }
-        };
-
-        var onseeking = function(e) {
-          //请求中
-          if (!me.logInfo.startSeek) {
-            me.logInfo.startSeek = true;
-          }
-        };
-
-        var onstalled = function(e) {
-          if (me.logInfo.startSeek) {
-            me.logInfo.startSeek = false;
-            var logData = {
-              type: "slow",
-              msg: "网速慢"
-            }
-            me.sendLog(logData)
-          }
-          var logData = {
-            type: "dataUnuseful",
-            msg: "浏览器尝试获取媒体数据，但数据不可用"
-          }
-          me.sendLog(logData);
-        };
-
-        video.addEventListener('loadstart', onloadstart, false);
-        video.addEventListener('loadeddata', onloadeddata, false);
-        video.addEventListener('seeked', onseeked, false);
-        video.addEventListener('seeking', onseeking, false);
-        video.addEventListener('abort', onloaderror, false);
-        video.addEventListener('error', onloaderror, false);
-        video.addEventListener('stalled', onstalled, false);
-        video.addEventListener('timeupdate', ontimeupdate, false);
-
-        //video.onseeking = onseeking;
-
-        video.load();
-        this.container.appendChild(video);
-        if (this.progressCtn) this.progressCtn.style.display = "none";
-        if (this.progressBar) this.progressBar.style.display = "none";
-      }
+        //this.doPlay();
+        this.setDefault();
+      } else {}
     },
 
-	setDefault:function(){
-		this.canvasLoading.drawDefault();
-		this.bindPlayPauseEvent();
-	},
+    setDefault: function() {
+      this.canvasLoading.drawDefault();
+      this.bindPlayPauseEvent();
+    },
 
-	doPlay:function(){
-        this.canvasLoading.play();
-        this.manifest = this.options.liveUrl;
-        this.context = this.canvas.getContext('2d');
-        this.nextIndex = 0;
-        this.sentVideos = 0;
-        this.currentVideo = null;
-        this.videos = [];
-        this.lastOriginal = 0;
-        this.isBindSeek = false;
-        this.isTriggerSeek = false;
-        this.seekIndex = 0;
-        this.filesInfo = [];
-        this.seekTime = 0;
-        //错误重试变量
-        this.indexErrRetry = 0;
-        this.indexErrTimer = 0;
-        this.initLivePlayIndex();	
-	},
+    doPlay: function() {
+      this.canvasLoading.play();
+      this.manifest = this.options.liveUrl;
+      this.context = this.canvas.getContext('2d');
+      this.nextIndex = 0;
+      this.sentVideos = 0;
+      this.currentVideo = null;
+      this.videos = [];
+      this.lastOriginal = 0;
+      this.isBindSeek = false;
+      this.isTriggerSeek = false;
+      this.seekIndex = 0;
+      this.filesInfo = [];
+      this.seekTime = 0;
+      //错误重试变量
+      this.indexErrRetry = 0;
+      this.indexErrTimer = 0;
+      this.initLivePlayIndex();
+    },
 
     randomStr: function(max) {
       var randomStr_str = '1234567890abcdefghijklmnopqrstuvwxyzABCDEFGHIGKLMNOPQRSTUVWXYZ';
@@ -288,7 +217,7 @@
 
         if (originals.length === 0) {
           onErrorIndex();
-		  return false;
+          return false;
         }
         //获取服务端推荐的分辨率
         me.resolution = this.responseText
@@ -297,7 +226,7 @@
         //如果服务端没有给出分辨率，就采用配置参数
         //me.resolution ? me.resolution = me.resolution.split(":")[1] : me.resolution = me.options.defaultResolution;
         //me.resolution = me.options.defaultResolution;
-		me.resolution =me.options.specifiedResolution ? me.options.specifiedResolution: me.resolution.split(":")[1]
+        me.resolution = me.options.specifiedResolution ? me.options.specifiedResolution : me.resolution.split(":")[1]
         me.realWidth = parseInt(me.resolution.split("x")[0]);
         me.realHeight = parseInt(me.resolution.split("x")[1]);
         me.setDrawVideoProperty();
@@ -351,7 +280,7 @@
           msg: msg
         };
         me.sendLog(info);
-		
+
         var breakTime = me.options.breakTime;
         if (!me.setFirst && breakTime && breakTime < me.totalDuration) {
           me.setFirst = true;
@@ -359,9 +288,9 @@
           var percent = current / me.totalDuration;
           me.setVideoStartTime(percent);
           //me.bindPlayPauseEvent();
-        }else{
-			me.setFirst=true;
-		}
+        } else {
+          me.setFirst = true;
+        }
 
       };
 
@@ -470,7 +399,7 @@
         if (me.segErrTimer) clearInterval(me.segErrTimer);
         if (me.currentVideo !== this) {
           //绑定播放暂停按钮事件
-		  /*
+          /*
           if (!me.currentVideo) {
             me.bindPlayPauseEvent();
           }
@@ -596,7 +525,7 @@
     },
 
     destroy: function() {
-	  this.heartBeatTimer && clearInterval(this.heartBeatTimer);
+      this.heartBeatTimer && clearInterval(this.heartBeatTimer);
       if (this.canvasLoading) this.canvasLoading = null;
       for (var i = 0; i < this.videos.length; i++) {
         if (this.videos[i]) {
@@ -765,30 +694,29 @@
       var screenBtn = this.screenBtn;
       if (screenBtn) {
         screenBtn.addEventListener('click', function() {
-			converter.setPause();
+          converter.setPause();
         });
       }
     },
 
-	setPause:function(){
-		var me=this;
-		if(!me.setFirst){
-			me.doPlay();
-		if (me.options.playPauseCallBack){
-			me.options.playPauseCallBack(false);
-		}
-			return false;
-		}
-		if (me.currentVideo.paused){
-			me.currentVideo["play"]();
-		}
-		else{
-			me.currentVideo["pause"]();
-		}
-		if (me.options.playPauseCallBack){
-			me.options.playPauseCallBack(me.currentVideo.paused)
-		}
-	},
+    setPause: function() {
+      var me = this;
+      if (!me.setFirst) {
+        me.doPlay();
+        if (me.options.playPauseCallBack) {
+          me.options.playPauseCallBack(false);
+        }
+        return false;
+      }
+      if (me.currentVideo.paused) {
+        me.currentVideo["play"]();
+      } else {
+        me.currentVideo["pause"]();
+      }
+      if (me.options.playPauseCallBack) {
+        me.options.playPauseCallBack(me.currentVideo.paused)
+      }
+    },
 
     setMute: function(mute) {
       var videos = this.videos;
