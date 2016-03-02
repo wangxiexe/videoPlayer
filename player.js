@@ -288,6 +288,7 @@
 
         if (originals.length === 0) {
           onErrorIndex();
+		  return false;
         }
         //获取服务端推荐的分辨率
         me.resolution = this.responseText
