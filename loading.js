@@ -21,7 +21,7 @@
     this.backgroundColor = d.backgroundColor || 'rgba(0,0,0,0)';
     this.fillColor = d.fillColor;
     this.strokeColor = d.strokeColor;
-    this.defaultImage = d.defaultImage;
+	this.defaultImage = d.defaultImage;
     this.stepMethod = typeof d.step == 'string' ?
       stepMethods[d.step] :
       d.step || stepMethods.square;
@@ -317,35 +317,34 @@
       }, 1000 / this.fps);
 
     },
-    drawDefault: function() {
-      //this._.clearRect(0, 0, this.fullWidth, this.fullHeight);
-      if (this.defaultImage) {
-        var img = new Image();
-        img.src = this.defaultImage;
-        var me = this;
-        img.onload = function() {
-          var d = me.getImageProperty(img.width, img.height);
-          me._.drawImage(img, d.l, d.t, d.w, d.h);
-        }
-        img.onerror = function() {
-          me._.fillRect(0, 0, me.fullWidth, me.fullHeight);
-        }
-      } else {
-        this._.fillRect(0, 0, this.fullWidth, this.fullHeight);
-      }
+	drawDefault:function(){
+		//this._.clearRect(0, 0, this.fullWidth, this.fullHeight);
+		if (this.defaultImage) {
+			var img = new Image();
+			img.src = this.defaultImage;
+			var me = this;
+			img.onload = function() {
+			var d = me.getImageProperty(img.width, img.height);
+				me._.drawImage(img, d.l, d.t, d.w, d.h);
+			}
+			img.onerror = function() {
+				me._.fillRect(0, 0, me.fullWidth, me.fullHeight);
+			}
+		} else {
+			this._.fillRect(0, 0, this.fullWidth, this.fullHeight);
+		}
+	},
 
-    },
-
-    getImageProperty: function(wid, hei) {
+    getImageProperty: function(wid,hei) {
       var w = 0,
         h = 0,
         l = 0,
         t = 0,
         p = 0;
       var realWidth = wid;
-      var realHeight = hei;
-      var playWidth = this.fullWidth;
-      var playHeight = this.fullHeight;
+      var realHeight =hei;
+      var playWidth =  this.fullWidth;
+      var playHeight =  this.fullHeight;
       var p1 = realWidth / playWidth;
       var p2 = realHeight / playHeight;
       if (p1 <= p2) {

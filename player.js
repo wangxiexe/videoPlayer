@@ -28,7 +28,7 @@
         onSeekEndCallBack: null, //Seek结束回调函数
         indexErrorRetryNum: 5, //索引请求错误重试次数
         segErrorRetryNum: 5, //分片请求错误重试次数
-        sendLogCallBack: null //日志发送回调
+        throwErrorInfoCallBack: null //错误信息回调
       }
       if (options)
         this.extend(this.options, options);
@@ -78,7 +78,7 @@
           this.container.appendChild(this.canvasLoading.canvas);
         }
         this.canvas = this.canvasLoading.canvas;
-        //this.doPlay();
+        //this.initLoadPlayer();
         this.setDefault();
       } else {}
     },
@@ -88,7 +88,7 @@
       this.bindPlayPauseEvent();
     },
 
-    doPlay: function() {
+    initLoadPlayer: function() {
       this.canvasLoading.play();
       this.manifest = this.options.liveUrl;
       this.context = this.canvas.getContext('2d');
@@ -141,18 +141,6 @@
       return "other";
     },
 
-    sendInitLog: function() {
-      var logData = {
-          date: new Date().valueOf(),
-          type: 101,
-          gmt: new Date().getTimezoneOffset(),
-          system: this.detectOS(),
-          userAgent: navigator.userAgent || navigator.vendor || window.opera,
-          playMetaData: this.options.hls
-        }
-        //this.sendLog(logData)
-    },
-
     initLivePlayIndex: function() {
       // relative URL resolver
       var resolveURL = (function() {
@@ -176,10 +164,12 @@
           return resolved_url;
         };
       })();
+
       var ajax = new XMLHttpRequest(),
         me = this;
 
       if (me.indexErrTimer) clearInterval(me.indexErrTimer);
+
       this.ajax = ajax;
 
       var onErrorIndex = function(e) {
@@ -196,7 +186,7 @@
             type: 'dataUnuseful',
             msg: '尝试多次发送请求，但无结果响应'
           };
-          me.sendLog(info);
+          me.throwErrorInfo(info);
           if (me.heartBeatTimer) {
             clearInterval(me.heartBeatTimer);
           }
@@ -205,7 +195,6 @@
 
       var onLoadIndex = function() {
         me.startSendHeartBeat();
-
         //解析m3u8文件
         var originals =
           this.responseText
@@ -225,9 +214,8 @@
         me.resolution = this.responseText
           .split(/\r?\n/)
           .filter(RegExp.prototype.test.bind(/^\#EXT-X-RESOLUTION:/))[0];
-        //如果服务端没有给出分辨率，就采用配置参数
-        //me.resolution ? me.resolution = me.resolution.split(":")[1] : me.resolution = me.options.defaultResolution;
-        //me.resolution = me.options.defaultResolution;
+
+        //优先取自定义分辨率，如果自定义没有，就取服务端返回的
         me.resolution = me.options.specifiedResolution ? me.options.specifiedResolution : me.resolution.split(":")[1]
         me.realWidth = parseInt(me.resolution.split("x")[0]);
         me.realHeight = parseInt(me.resolution.split("x")[1]);
@@ -254,7 +242,7 @@
 
         var filesInfo = originals.map(function(url, index) {
           return {
-            url: url + "?" + index, //new Date().valueOf(),
+            url: url + "?" + index + new Date().valueOf(),
             index: index,
             time: duration[index],
             total: total,
@@ -270,42 +258,28 @@
           me.createVideoPlay(me.filesInfo[i])
         }
 
-        var msg = "正常进行中";
-        var type = 200;
-        if (this.status == "404") {
-          type = 404;
-          msg = "地址404";
-        }
-
-        var info = {
-          type: type,
-          msg: msg
-        };
-        me.sendLog(info);
-
+        //从第几秒开始播放
         var breakTime = me.options.breakTime;
+
         if (!me.setFirst && breakTime && breakTime < me.totalDuration) {
           me.setFirst = true;
           var current = me.options.breakTime;
           var percent = current / me.totalDuration;
           me.setVideoStartTime(percent);
-          //me.bindPlayPauseEvent();
         } else {
+          //用来标识不是首次加载
           me.setFirst = true;
         }
-
       };
 
       ajax.addEventListener('load', onLoadIndex);
       ajax.addEventListener('error', onErrorIndex);
       ajax.open('GET', this.manifest, true);
       ajax.send();
-
-
     },
-    WIDTH: 0,
 
     setDrawVideoProperty: function() {
+      //将视频真实宽搞适配到当前容器，并使canvas居中
       var w = 0,
         h = 0,
         l = 0,
@@ -358,6 +332,7 @@
       };
 
       var onCanPlay = function() {
+        if (!me.isBindSeek) me.bindSeekEvent();
         if (me.segErrTimer) clearInterval(me.segErrTimer)
         this.setAttribute("retry", "0");
 
@@ -366,7 +341,10 @@
         this.setAttribute("ready", "1");
 
         if (me.currentVideo && this.id == me.currentVideo.id) this.play();
-        if (this.id == me.nextIndex && !me.currentVideo) this.play();
+        if (this.id == me.nextIndex && !me.currentVideo) {
+          this.currentTime = 0;
+          this.play();
+        }
         if (me.isTriggerSeek) {
           me.options.onSeekEndCallBack && me.options.onSeekEndCallBack();
           me.isTriggerSeek = false;
@@ -381,14 +359,14 @@
 
       var onTimeUpdate = function() {
         var time, playTime = this.currentTime + data.segTime;
+
         if (me.seekTime !== 0 && me.seekTime > playTime && me.isTriggerSeek === false) {
           time = me.seekTime / data.total;
         } else {
           time = (this.currentTime + data.segTime) / data.total;
         }
         if (time > 1) time = 1
-          //var percent = time * 100;
-        var percent = (this.currentTime + data.segTime) / data.total * 100;
+        var percent = time * 100;
         var timeInfo = {
           currentTime: this.currentTime + data.segTime,
           totalTime: data.total,
@@ -400,16 +378,8 @@
       var onPlay = function() {
         if (me.segErrTimer) clearInterval(me.segErrTimer);
         if (me.currentVideo !== this) {
-          //绑定播放暂停按钮事件
-          /*
-          if (!me.currentVideo) {
-            me.bindPlayPauseEvent();
-          }
-		  */
-
-          if (this.currentTime != 0) {
-            this.currentTime = 0;
-          }
+          //防止video标签缓存播放时间
+          if (this.currentTime != 0) this.currentTime = 0;
 
           me.currentVideo = this;
           me.nextIndex++;
@@ -428,9 +398,12 @@
       var onEnded = function() {
         if (me.nextIndex >= me.sentVideos) {
           if (!me.options.isLoop) {
-            me.nextIndex = 1;
-            me.currentVideo = me.videos[0];
+            //重新播放需要重置以下参数
+            me.nextIndex = 0;
+            me.currentVideo = null;
             me.progressBar.style.width = "100%";
+            me.isEnded = true;
+            me.seekTime = 0;
             me.options.onEndedCallBack && me.options.onEndedCallBack()
             return;
           } else {
@@ -441,10 +414,9 @@
         if (me.nextIndex in me.videos) {
           me.videos[me.nextIndex].play();
         }
-      }
+      };
 
       var onVideoError = function() {
-
         var video = this;
         if (me.isTriggerSeek) me.isTriggerSeek = false;
         if (me.currentVideo && me.canvasLoading.stopped && me.currentVideo.id == this.id) {
@@ -467,7 +439,7 @@
           video.setAttribute("retry", retryCount);
         } else {
           if (me.segErrTimer) clearInterval(me.segErrTimer);
-          me.sendLog({
+          me.throwErrorInfo({
             type: "loadingError",
             msg: "出现问题，中止加载"
           });
@@ -480,7 +452,7 @@
           type: "abort",
           msg: "视频中止加载此url:" + this.src
         };
-        me.sendLog(info);
+        me.throwErrorInfo(info);
       };
 
       var onVideoVoiceChange = function() {
@@ -517,7 +489,6 @@
       (function canplaythrough() {
         me.videos[data.index] = this;
         if ((!me.currentVideo || me.currentVideo.ended) && data.index === me.nextIndex) {
-          if (!me.isBindSeek) me.bindSeekEvent();
           this.src = this.getAttribute("url");
           this.load();
         }
@@ -551,7 +522,6 @@
       }
     },
 
-
     setVideoStartTime: function(seekPercent) {
       var me = this;
       me.seekTime = 0;
@@ -559,7 +529,6 @@
       var seekIndex = 0;
 
       if (me.currentVideo) me.currentVideo.pause();
-
 
       me.seekTime = currentTime;
 
@@ -600,7 +569,6 @@
             me.isTriggerSeek = false;
             me.options.onSeekEndCallBack && me.options.onSeekEndCallBack();
           }
-
         }
       }
     },
@@ -621,54 +589,8 @@
           currentTime = me.totalDuration * seekPercent,
           seekIndex = 0;
         me.setVideoStartTime(seekPercent);
-        return false;
-
-        if (me.currentVideo) me.currentVideo.pause();
-
-
-        me.seekTime = currentTime;
-
-        for (var i = 0; i < me.filesInfo.length; i++) {
-          var minTime = me.filesInfo[i].segTime,
-            maxTime;
-          if (i === me.filesInfo.length - 1)
-            maxTime = me.filesInfo[i].total;
-          else
-            maxTime = me.filesInfo[i + 1].segTime;
-
-          if (currentTime > minTime && currentTime < maxTime) {
-            seekIndex = i;
-            break;
-          }
-        }
-
-        me.seekIndex = seekIndex;
-
-        if (me.filesInfo[seekIndex].index === me.nextIndex - 1) {
-          me.currentVideo.currentTime = currentTime - me.filesInfo[seekIndex].segTime;
-          if (me.currentVideo) me.currentVideo.play();
-        } else {
-          setTimeout(function() {
-            me.options.onSeekStartCallBack && me.options.onSeekStartCallBack(seekPercent, currentTime, me.totalDuration)
-          }, 100);
-          if (me.filesInfo[seekIndex].index in me.videos) {
-            me.currentVideo = me.videos[me.filesInfo[seekIndex].index];
-            me.nextIndex = me.filesInfo[seekIndex].index + 1;
-            var isReady = me.currentVideo.getAttribute("ready");
-            if (!isReady) {
-              me.currentVideo.src = me.currentVideo.getAttribute("url");
-              me.currentVideo.load();
-              me.currentVideo.currentTime = currentTime - me.filesInfo[seekIndex].segTime;
-            } else {
-              me.currentVideo.currentTime = currentTime - me.filesInfo[seekIndex].segTime;
-              me.currentVideo.play();
-              me.isTriggerSeek = false;
-              me.options.onSeekEndCallBack && me.options.onSeekEndCallBack();
-            }
-
-          }
-        }
       }, false)
+
       this.isBindSeek = true;
     },
 
@@ -708,24 +630,34 @@
     setPause: function() {
       var me = this;
       if (!me.setFirst) {
-        me.doPlay();
+        me.initLoadPlayer();
         if (me.options.playPauseCallBack) {
           me.options.playPauseCallBack(false);
         }
         return false;
       }
-      if (me.currentVideo.paused) {
+      if (me.isEnded) {
+        me.videos[0].load();
+        me.isEnded = false;
+      }
+      if (me.currentVideo && me.currentVideo.paused) {
         me.currentVideo["play"]();
-      } else {
+      } else if (me.currentVideo) {
         me.currentVideo["pause"]();
       }
-      if (me.options.playPauseCallBack) {
+      if (me.options.playPauseCallBack && me.currentVideo) {
         me.options.playPauseCallBack(me.currentVideo.paused)
+      } else {
+        me.options.playPauseCallBack(false);
       }
+
     },
 
     setMute: function(mute) {
       var videos = this.videos;
+      if (!videos || videos.length == 0) {
+        return false;
+      }
       for (var i = 0; i < videos.length; i++) {
         videos[i].muted = mute;
       }
@@ -733,7 +665,7 @@
 
     getVolume: function() {
       var videos = this.videos;
-      if (videos.length == 0) {
+      if (!videos || videos.length == 0) {
         return 1;
       }
       var initVolume = videos[0].volume;
@@ -742,7 +674,7 @@
 
     setVolume: function(value) {
       var videos = this.videos;
-      if (videos.length == 0) {
+      if (!videos || videos.length == 0) {
         return false;
       }
       var initVolume = videos[0].volume;
@@ -839,7 +771,7 @@
               type: "beatheart",
               msg: "尝试多次心跳无果，中止发送"
             };
-            me.sendLog(info);
+            me.throwErrorInfo(info);
           }
         } else {
           me.heartBeatCount = 0;
@@ -852,11 +784,11 @@
       xhr.send();
     },
 
-    sendLog: function(info) {
+    throwErrorInfo: function(info) {
       if (this.playerId) {
         info._id = this.playerId;
       }
-      this.options.sendLogCallBack && this.options.sendLogCallBack(info)
+      this.options.throwErrorInfoCallBack && this.options.throwErrorInfoCallBack(info)
     }
   };
 
