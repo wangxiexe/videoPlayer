@@ -74,7 +74,9 @@
           }
         };
         this.canvasLoading = new Loading(loadingOption);
-        this.container.appendChild(this.canvasLoading.canvas);
+        if (this.container) {
+          this.container.appendChild(this.canvasLoading.canvas);
+        }
         this.canvas = this.canvasLoading.canvas;
         //this.doPlay();
         this.setDefault();
@@ -527,13 +529,15 @@
     destroy: function() {
       this.heartBeatTimer && clearInterval(this.heartBeatTimer);
       if (this.canvasLoading) this.canvasLoading = null;
-      for (var i = 0; i < this.videos.length; i++) {
-        if (this.videos[i]) {
-          this.videos[i].removeEvent();
-          this.videos[i].pause();
+      if (this.videos) {
+        for (var i = 0; i < this.videos.length; i++) {
+          if (this.videos[i]) {
+            this.videos[i].removeEvent();
+            this.videos[i].pause();
+          }
+          this.videos[i] = null;
+          delete this.videos[i];
         }
-        this.videos[i] = null;
-        delete this.videos[i];
       }
       this.videos = null;
       this.currentVideo = null;
@@ -541,8 +545,10 @@
       this.context = null;
       if (this.segErrTimer) clearInterval(this.segErrTimer);
       if (this.indexErrTimer) clearInterval(this.indexErrTimer);
-      this.ajax.abort();
-      this.ajax = null;
+      if (this.ajax) {
+        this.ajax.abort();
+        this.ajax = null;
+      }
     },
 
 
