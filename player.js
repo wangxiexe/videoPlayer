@@ -629,8 +629,9 @@
 
     setPause: function() {
       var me = this;
-      if (!me.setFirst) {
+      if (!me.bindFirst) {
         me.initLoadPlayer();
+		me.bindFirst=true;
         if (me.options.playPauseCallBack) {
           me.options.playPauseCallBack(false);
         }
