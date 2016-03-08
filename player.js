@@ -499,6 +499,10 @@
 
     destroy: function() {
       this.heartBeatTimer && clearInterval(this.heartBeatTimer);
+	  if(me.heartBeatXhr){
+		  me.heartBeatXhr.abort();
+		  me.heartBeatXhr=null;
+	  }
       if (this.canvasLoading) this.canvasLoading = null;
       if (this.videos) {
         for (var i = 0; i < this.videos.length; i++) {
@@ -763,6 +767,7 @@
     sendHeartBeat: function(url) {
       var me = this;
       var xhr = new XMLHttpRequest();
+	  me.heartBeatXhr = xhr;
       xhr.onload = function() {
         if (this.status == "404") {
           me.heartBeatCount++;
