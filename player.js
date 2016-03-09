@@ -499,9 +499,9 @@
 
     destroy: function() {
       this.heartBeatTimer && clearInterval(this.heartBeatTimer);
-	  if(me.heartBeatXhr){
-		  me.heartBeatXhr.abort();
-		  me.heartBeatXhr=null;
+	  if(this.heartBeatXhr){
+		  this.heartBeatXhr.abort();
+		  this.heartBeatXhr=null;
 	  }
       if (this.canvasLoading) this.canvasLoading = null;
       if (this.videos) {
