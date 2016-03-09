@@ -37,6 +37,7 @@
       this.playerId = this.randomStr(24);
       this.container = this.getID(this.options.container);
       this.playPauseButton = this.getID(this.options.playPauseButton);
+      this.bigStartPlayButton = this.getID(this.options.bigStartPlayButton);
       this.screenBtn = this.getID(this.options.screenBtn);
       this.progressCtn = this.getID(this.options.progressCtn);
       this.progressBar = this.getID(this.options.progressBar);
@@ -185,7 +186,7 @@
             clearInterval(me.indexErrTimer);
           }
           var info = {
-            type: 'indexError',
+            type: 'indexUnavailable',
 			code:'1000',
             msg: '尝试多次发送请求，但无结果响应'
           };
@@ -453,7 +454,7 @@
       var onVideoAbort = function() {
         var info = {
           type: "videoLoadingAbort",
-		  code:'1002'
+		  code:'1002',
           msg: "video放弃加载此url:" + this.src
         };
         me.throwErrorInfo(info);
@@ -503,10 +504,10 @@
 
     destroy: function() {
       this.heartBeatTimer && clearInterval(this.heartBeatTimer);
-	  if(this.heartBeatXhr){
-		  this.heartBeatXhr.abort();
-		  this.heartBeatXhr=null;
-	  }
+  	  if(this.heartBeatXhr){
+  		  this.heartBeatXhr.abort();
+  		  this.heartBeatXhr=null;
+  	  }
       if (this.canvasLoading) this.canvasLoading = null;
       if (this.videos) {
         for (var i = 0; i < this.videos.length; i++) {
@@ -613,9 +614,16 @@
 
     bindPlayPauseEvent: function() {
       var converter = this,
-        button = this.playPauseButton;
+        button = this.playPauseButton,
+        bigStartPlayButton = this.bigStartPlayButton;
       if (button) {
         button.addEventListener('click', function() {
+          converter.setPause();
+        });
+      }
+
+      if (button && bigStartPlayButton) {
+        bigStartPlayButton.addEventListener('click', function() {
           converter.setPause();
         });
       }
