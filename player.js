@@ -184,7 +184,7 @@
             clearInterval(me.indexErrTimer);
           }
           var info = {
-            type: 'dataUnuseful',
+            type: 'indexUnavailable',
             msg: '尝试多次发送请求，但无结果响应'
           };
           me.throwErrorInfo(info);
