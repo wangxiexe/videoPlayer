@@ -40,6 +40,7 @@
       this.screenBtn = this.getID(this.options.screenBtn);
       this.progressCtn = this.getID(this.options.progressCtn);
       this.progressBar = this.getID(this.options.progressBar);
+	  this.manifest = this.options.liveUrl;
 
       //如果是PC端、非safari、且URL是直播形式URL
       if (this.options.url === "") {
@@ -86,11 +87,12 @@
     setDefault: function() {
       this.canvasLoading.drawDefault();
       this.bindPlayPauseEvent();
+	  this.startSendHeartBeat();
     },
 
     initLoadPlayer: function() {
       this.canvasLoading.play();
-      this.manifest = this.options.liveUrl;
+      
       this.context = this.canvas.getContext('2d');
       this.nextIndex = 0;
       this.sentVideos = 0;
@@ -183,7 +185,8 @@
             clearInterval(me.indexErrTimer);
           }
           var info = {
-            type: 'dataUnuseful',
+            type: 'indexError',
+			code:'1000',
             msg: '尝试多次发送请求，但无结果响应'
           };
           me.throwErrorInfo(info);
@@ -194,7 +197,6 @@
       };
 
       var onLoadIndex = function() {
-        me.startSendHeartBeat();
         //解析m3u8文件
         var originals =
           this.responseText
@@ -440,8 +442,9 @@
         } else {
           if (me.segErrTimer) clearInterval(me.segErrTimer);
           me.throwErrorInfo({
-            type: "loadingError",
-            msg: "出现问题，中止加载"
+            type: "videoLoadingError",
+			code: "1001",
+            msg: "当前video分片加载出现错误"
           });
           video.setAttribute("retry", "0");
         }
@@ -449,8 +452,9 @@
 
       var onVideoAbort = function() {
         var info = {
-          type: "abort",
-          msg: "视频中止加载此url:" + this.src
+          type: "videoLoadingAbort",
+		  code:'1002'
+          msg: "video放弃加载此url:" + this.src
         };
         me.throwErrorInfo(info);
       };
@@ -774,7 +778,8 @@
           if (me.heartBeatCount > me.options.indexErrorRetryNum) {
             clearInterval(me.heartBeatTimer);
             var info = {
-              type: "beatheart",
+              type: "beatheartError",
+			  code:'1003',
               msg: "尝试多次心跳无果，中止发送"
             };
             me.throwErrorInfo(info);

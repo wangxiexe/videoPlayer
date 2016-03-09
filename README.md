@@ -90,9 +90,13 @@
 - `indexErrorRetryNum` 索引请求错误重试次数
 
 - `segErrorRetryNum` 分片请求错误重试次数
+
 - `sendLogCallBack`  当有错误时，获取到返回的信息
+
 - `breakTime`  从第几秒开始播放int类型
+
 - `screenBtn`  全屏点击的按钮ID
+
 - `specifiedResolution`  自定义分辨率
 
 ###声音控制
@@ -104,17 +108,22 @@
 	player.setMute(bool);
 
 - `setVolume(n)` 设置声音,n为0-1之间的数值
+
 - `getVolume()` 获取当前声音值
+
 - `setMute(bool)` 设置静音,bool:false为开启声音,true为静音
 
-###返回状态(新添) 
--	type:状态，必会返回
--	msg:对状态的解释,必返回
-- `loaderror` 请求数据时发生错误
-- `slow` 网速慢
-- `dataUnuseful` 浏览器尝试获取媒体数据，但数据不可用
-- `404` 地址不可用
-- `retry` 加载失败，重新尝试加载
-- `loadingError` 多次尝试后无果，中止加载
-- `abort` 视频内部中止加载
-- `beatheart` 停止心跳(此状态不能作为视频播放完毕的判断条件)
+###返回错误说明
+ 
+`type`: 错误状态标示，`code`: 错误代码; `msg`:对错误状态标示的解释
+
+注意：标注为【必】的表示必须提示用户的。
+
+- `indexUnavailable` 1000 m3u8索引文件请求失败或者无分片信息,当请求m3u8文件返回http code为4xx、5xx的时候或者返回的m3u8为空的时候【必】
+
+- `videoLoadingError` 1001 当前video分片加载出现错误【必】
+
+- `videoLoadingAbort` 1002 video放弃加载
+
+- `beatheartError` 1003 尝试多次心跳无果，中止发送
+ 
