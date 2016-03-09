@@ -18,6 +18,7 @@
         defaultResolution: "426x240", //默认分辨率
         playPauseButton: "", //播放（暂停）按钮id
         screenBtn: "", //全屏点击按钮id
+		loadingContainerID:'',//loading条的窗口
         playPauseCallBack: null, //播放（暂停）回调函数，返回是否暂停
         progressCtn: "", //进度容器id
         progressBar: "", //进度条id
@@ -42,6 +43,8 @@
       this.progressCtn = this.getID(this.options.progressCtn);
       this.progressBar = this.getID(this.options.progressBar);
 	  this.manifest = this.options.liveUrl;
+	  this.loadingContainer=this.getID(this.options.loadingContainerID);
+	  this.defaultImage=this.options.defaultImage || null;
 
       //如果是PC端、非safari、且URL是直播形式URL
       if (this.options.url === "") {
@@ -75,26 +78,89 @@
             this._.fill();
           }
         };
-        this.canvasLoading = new Loading(loadingOption);
+        //this.canvasLoading = new Loading(loadingOption);
+		this.canvas = document.createElement('canvas');
+		this.context = this.canvas.getContext('2d');
+		this.canvas.width=this.playWidth;
+		this.canvas.height=this.playHeight;
         if (this.container) {
-          this.container.appendChild(this.canvasLoading.canvas);
+          this.container.appendChild(this.canvas);//加载默认图片
         }
-        this.canvas = this.canvasLoading.canvas;
+        
         //this.initLoadPlayer();
         this.setDefault();
       } else {}
     },
 
     setDefault: function() {
-      this.canvasLoading.drawDefault();
+      //this.canvasLoading.drawDefault();
+	  this.drawDefault();
       this.bindPlayPauseEvent();
 	  this.startSendHeartBeat();
     },
+	
+	drawDefault:function(){
+		if (this.defaultImage) {
+			var img = new Image();
+			img.src = this.defaultImage;
+			var me = this;
+			img.onload = function() {
+				var d = me.getImageProperty(img.width, img.height);
+				me.context.drawImage(img, d.l, d.t, d.w, d.h);
+			}
+			img.onerror = function() {
+				me.context.fillRect(0, 0, me.fullWidth, me.fullHeight);
+			}
+		} else {
+			this.context.fillRect(0, 0, this.fullWidth, this.fullHeight);
+		}		
+	},
+
+    getImageProperty: function(wid,hei) {
+      var w = 0,
+        h = 0,
+        l = 0,
+        t = 0,
+        p = 0;
+      var realWidth = wid;
+      var realHeight =hei;
+      var playWidth =  this.playWidth;
+      var playHeight =  this.playHeight;
+      var p1 = realWidth / playWidth;
+      var p2 = realHeight / playHeight;
+      if (p1 <= p2) {
+        h = Math.min(realHeight, playHeight);
+        p = realHeight / h;
+        w = realWidth / p;
+
+      } else {
+        w = Math.min(realWidth, playWidth);
+        p = realWidth / w;
+        h = realHeight / p;
+      }
+      l = (playWidth - w) / 2;
+      t = (playHeight - h) / 2;
+      return {
+        w: w,
+        h: h,
+        l: l,
+        t: t
+      };
+    },
+
+	showLoading:function(){
+		this.loadingContainer.style.display="block";
+	},
+	
+	hideLoading:function(){
+		this.loadingContainer.style.display="none";
+	},
 
     initLoadPlayer: function() {
-      this.canvasLoading.play();
+      //this.canvasLoading.play();
+	  this.showLoading();
       
-      this.context = this.canvas.getContext('2d');
+      
       this.nextIndex = 0;
       this.sentVideos = 0;
       this.currentVideo = null;
@@ -325,11 +391,16 @@
 
       var onLoadStart = function() {
         if (!this.src) return;
+		/*
         if (me.currentVideo && me.canvasLoading.stopped && me.currentVideo.id == this.id) {
           me.canvas.width = me.canvasLoading.width;
           me.canvas.height = me.canvasLoading.height;
           me.canvasLoading.play();
         }
+		*/
+		 if (me.currentVideo && me.currentVideo.id == this.id) {
+			me.showLoading();
+		 }
         var retry = this.getAttribute("retry");
         if (!retry) this.setAttribute("retry", "0");
       };
@@ -339,7 +410,8 @@
         if (me.segErrTimer) clearInterval(me.segErrTimer)
         this.setAttribute("retry", "0");
 
-        if (!me.canvasLoading.stopped) me.canvasLoading.stop();
+        //if (!me.canvasLoading.stopped) me.canvasLoading.stop();
+		me.hideLoading();
 
         this.setAttribute("ready", "1");
 
@@ -422,12 +494,17 @@
       var onVideoError = function() {
         var video = this;
         if (me.isTriggerSeek) me.isTriggerSeek = false;
+		/*
         if (me.currentVideo && me.canvasLoading.stopped && me.currentVideo.id == this.id) {
           me.canvas.width = me.canvasLoading.width;
           me.canvas.height = me.canvasLoading.height;
           me.canvas.setAttribute("width", me.canvasLoading.width);
           me.canvas.setAttribute("height", me.canvasLoading.height);
           me.canvasLoading.play();
+        }
+		*/
+        if (me.currentVideo && me.currentVideo.id == this.id) {
+		  me.showLoading();
         }
 
         video.removeAttribute("ready");
@@ -508,7 +585,8 @@
   		  this.heartBeatXhr.abort();
   		  this.heartBeatXhr=null;
   	  }
-      if (this.canvasLoading) this.canvasLoading = null;
+      //if (this.canvasLoading) this.canvasLoading = null;
+	  this.hideLoading();
       if (this.videos) {
         for (var i = 0; i < this.videos.length; i++) {
           if (this.videos[i]) {

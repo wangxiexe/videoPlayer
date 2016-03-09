@@ -126,7 +126,7 @@
 			screenBtn:"screenBtn",
             progressCtn    : "progress",
             progressBar    : "progress-bar",
-			breakTime	   : 22,
+			loadingContainerID:"loading",
             playPauseCallBack: function(isPaused){
                 if (isPaused){
                     document.getElementById("play").innerHTML="播放";
@@ -141,11 +141,13 @@
                 document.getElementById("time").innerHTML = formatMillisecond(time.currentTime * 1000) + "/" + formatMillisecond(time.totalTime * 1000);
             },
             onSeekStartCallBack: function(percent, time, total){
+				document.getElementById("screenBtn").style.display="none";
                 document.getElementById("progress-bar").style.width = percent * 100 + "%";
                 document.getElementById("time").innerHTML = formatMillisecond(time * 1000) + "/" + formatMillisecond(total * 1000);
             },
 			onSeekEndCallBack:function(){
 				document.getElementById("play").innerHTML="暂停";
+				document.getElementById("screenBtn").style.display="none";
 			},
 			onVolumeChange:function(v){
 				document.getElementById("currentVoice").innerHTML="当前声音值："+v;
