@@ -37,6 +37,7 @@
       this.playerId = this.randomStr(24);
       this.container = this.getID(this.options.container);
       this.playPauseButton = this.getID(this.options.playPauseButton);
+      this.bigStartPlayButton = this.getID(this.options.bigStartPlayButton);
       this.screenBtn = this.getID(this.options.screenBtn);
       this.progressCtn = this.getID(this.options.progressCtn);
       this.progressBar = this.getID(this.options.progressBar);
@@ -499,10 +500,10 @@
 
     destroy: function() {
       this.heartBeatTimer && clearInterval(this.heartBeatTimer);
-	  if(this.heartBeatXhr){
-		  this.heartBeatXhr.abort();
-		  this.heartBeatXhr=null;
-	  }
+  	  if(this.heartBeatXhr){
+  		  this.heartBeatXhr.abort();
+  		  this.heartBeatXhr=null;
+  	  }
       if (this.canvasLoading) this.canvasLoading = null;
       if (this.videos) {
         for (var i = 0; i < this.videos.length; i++) {
@@ -609,9 +610,16 @@
 
     bindPlayPauseEvent: function() {
       var converter = this,
-        button = this.playPauseButton;
+        button = this.playPauseButton,
+        bigStartPlayButton = this.bigStartPlayButton;
       if (button) {
         button.addEventListener('click', function() {
+          converter.setPause();
+        });
+      }
+
+      if (button) {
+        bigStartPlayButton.addEventListener('click', function() {
           converter.setPause();
         });
       }
