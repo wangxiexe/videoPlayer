@@ -149,11 +149,15 @@
     },
 
 	showLoading:function(){
-		this.loadingContainer && this.loadingContainer.style.display="block";
+		if(this.loadingContainer) {
+			this.loadingContainer.style.display="block";
+		}
 	},
 	
 	hideLoading:function(){
-		this.loadingContainer && this.loadingContainer.style.display="none";
+		if(this.loadingContainer) {
+			this.loadingContainer.style.display="none";
+		}
 	},
 
     initLoadPlayer: function() {
