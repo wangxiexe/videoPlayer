@@ -51,34 +51,7 @@
         this.resolution = this.options.defaultResolution;
         this.playWidth = parseInt(this.resolution.split("x")[0]);
         this.playHeight = parseInt(this.resolution.split("x")[1]);
-        var loadingOption = {
-          width: this.playWidth,
-          height: this.playHeight,
-          stepsPerFrame: 5, // best between 1 and 5
-          trailLength: 0.9, // between 0 and 1
-          pointDistance: 0.01, // best between 0.01 and 0.05
-          fps: 20,
-          backgroundColor: '#272822',
-          fillColor: '#009688',
-          defaultImage: this.options.defaultImage,
-          path: [
-            ['arc', this.playWidth / 2, this.playHeight / 2, 30, 0, 360]
-          ],
-          step: function(point, index, frame) {
-            // `this._` is a HTML 2d Canvas Context
-            var sizeMultiplier = 4; // try changing this :)
-            this._.beginPath();
-            this._.moveTo(point.x, point.y);
-            this._.arc(
-              point.x, point.y,
-              index * sizeMultiplier, 0,
-              Math.PI * 2, false
-            );
-            this._.closePath();
-            this._.fill();
-          }
-        };
-        //this.canvasLoading = new Loading(loadingOption);
+
         this.canvas = document.createElement('canvas');
         this.context = this.canvas.getContext('2d');
         this.canvas.width = this.playWidth;
@@ -165,10 +138,7 @@
     },
 
     initLoadPlayer: function() {
-      //this.canvasLoading.play();
       this.showLoading();
-
-
       this.nextIndex = 0;
       this.sentVideos = 0;
       this.currentVideo = null;
