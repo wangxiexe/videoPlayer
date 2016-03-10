@@ -127,5 +127,5 @@
 
 - `beatheartError` 1003 尝试多次心跳无果，中止发送
 - 
-- `lastVideoLoadingError` 1004 视频最后一片出错，放弃请求
+- `lastVideoLoadingError` 1004 视频最后一片出错，放弃请求【必】
  

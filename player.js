@@ -18,7 +18,7 @@
         defaultResolution: "426x240", //默认分辨率
         playPauseButton: "", //播放（暂停）按钮id
         screenBtn: "", //全屏点击按钮id
-		loadingContainerID:'',//loading条的窗口
+        loadingContainerID: '', //loading条的窗口
         playPauseCallBack: null, //播放（暂停）回调函数，返回是否暂停
         progressCtn: "", //进度容器id
         progressBar: "", //进度条id
@@ -42,9 +42,9 @@
       this.screenBtn = this.getID(this.options.screenBtn);
       this.progressCtn = this.getID(this.options.progressCtn);
       this.progressBar = this.getID(this.options.progressBar);
-	  this.manifest = this.options.liveUrl;
-	  this.loadingContainer=this.getID(this.options.loadingContainerID);
-	  this.defaultImage=this.options.defaultImage || null;
+      this.manifest = this.options.liveUrl;
+      this.loadingContainer = this.getID(this.options.loadingContainerID);
+      this.defaultImage = this.options.defaultImage || null;
 
       //如果是PC端、非safari、且URL是直播形式URL
       if (this.options.url === "") {
@@ -79,14 +79,14 @@
           }
         };
         //this.canvasLoading = new Loading(loadingOption);
-		this.canvas = document.createElement('canvas');
-		this.context = this.canvas.getContext('2d');
-		this.canvas.width=this.playWidth;
-		this.canvas.height=this.playHeight;
+        this.canvas = document.createElement('canvas');
+        this.context = this.canvas.getContext('2d');
+        this.canvas.width = this.playWidth;
+        this.canvas.height = this.playHeight;
         if (this.container) {
-          this.container.appendChild(this.canvas);//加载默认图片
+          this.container.appendChild(this.canvas); //加载默认图片
         }
-        
+
         //this.initLoadPlayer();
         this.setDefault();
       } else {}
@@ -94,38 +94,42 @@
 
     setDefault: function() {
       //this.canvasLoading.drawDefault();
-	  this.drawDefault();
+      var me = this;
+      this.drawDefault();
       this.bindPlayPauseEvent();
-	  this.startSendHeartBeat();
-    },
-	
-	drawDefault:function(){
-		if (this.defaultImage) {
-			var img = new Image();
-			img.src = this.defaultImage;
-			var me = this;
-			img.onload = function() {
-				var d = me.getImageProperty(img.width, img.height);
-				me.context.drawImage(img, d.l, d.t, d.w, d.h);
-			}
-			img.onerror = function() {
-				me.context.fillRect(0, 0, me.fullWidth, me.fullHeight);
-			}
-		} else {
-			this.context.fillRect(0, 0, this.fullWidth, this.fullHeight);
-		}		
-	},
+      setTimeout(function() {
+        me.startSendHeartBeat();
+      }, 1000);
 
-    getImageProperty: function(wid,hei) {
+    },
+
+    drawDefault: function() {
+      if (this.defaultImage) {
+        var img = new Image();
+        img.src = this.defaultImage;
+        var me = this;
+        img.onload = function() {
+          var d = me.getImageProperty(img.width, img.height);
+          me.context.drawImage(img, d.l, d.t, d.w, d.h);
+        }
+        img.onerror = function() {
+          me.context.fillRect(0, 0, me.fullWidth, me.fullHeight);
+        }
+      } else {
+        this.context.fillRect(0, 0, this.fullWidth, this.fullHeight);
+      }
+    },
+
+    getImageProperty: function(wid, hei) {
       var w = 0,
         h = 0,
         l = 0,
         t = 0,
         p = 0;
       var realWidth = wid;
-      var realHeight =hei;
-      var playWidth =  this.playWidth;
-      var playHeight =  this.playHeight;
+      var realHeight = hei;
+      var playWidth = this.playWidth;
+      var playHeight = this.playHeight;
       var p1 = realWidth / playWidth;
       var p2 = realHeight / playHeight;
       if (p1 <= p2) {
@@ -148,23 +152,23 @@
       };
     },
 
-	showLoading:function(){
-		if(this.loadingContainer) {
-			this.loadingContainer.style.display="block";
-		}
-	},
-	
-	hideLoading:function(){
-		if(this.loadingContainer) {
-			this.loadingContainer.style.display="none";
-		}
-	},
+    showLoading: function() {
+      if (this.loadingContainer) {
+        this.loadingContainer.style.display = "block";
+      }
+    },
+
+    hideLoading: function() {
+      if (this.loadingContainer) {
+        this.loadingContainer.style.display = "none";
+      }
+    },
 
     initLoadPlayer: function() {
       //this.canvasLoading.play();
-	  this.showLoading();
-      
-      
+      this.showLoading();
+
+
       this.nextIndex = 0;
       this.sentVideos = 0;
       this.currentVideo = null;
@@ -257,7 +261,7 @@
           }
           var info = {
             type: 'indexUnavailable',
-			code:'1000',
+            code: '1000',
             msg: '尝试多次发送请求，但无结果响应'
           };
           me.throwErrorInfo(info);
@@ -395,16 +399,16 @@
 
       var onLoadStart = function() {
         if (!this.src) return;
-		/*
+        /*
         if (me.currentVideo && me.canvasLoading.stopped && me.currentVideo.id == this.id) {
           me.canvas.width = me.canvasLoading.width;
           me.canvas.height = me.canvasLoading.height;
           me.canvasLoading.play();
         }
-		*/
-		 if (me.currentVideo && me.currentVideo.id == this.id) {
-			me.showLoading();
-		 }
+    */
+        if (me.currentVideo && me.currentVideo.id == this.id) {
+          me.showLoading();
+        }
         var retry = this.getAttribute("retry");
         if (!retry) this.setAttribute("retry", "0");
       };
@@ -415,7 +419,7 @@
         this.setAttribute("retry", "0");
 
         //if (!me.canvasLoading.stopped) me.canvasLoading.stop();
-		me.hideLoading();
+        me.hideLoading();
 
         this.setAttribute("ready", "1");
 
@@ -498,7 +502,7 @@
       var onVideoError = function() {
         var video = this;
         if (me.isTriggerSeek) me.isTriggerSeek = false;
-		/*
+        /*
         if (me.currentVideo && me.canvasLoading.stopped && me.currentVideo.id == this.id) {
           me.canvas.width = me.canvasLoading.width;
           me.canvas.height = me.canvasLoading.height;
@@ -506,9 +510,9 @@
           me.canvas.setAttribute("height", me.canvasLoading.height);
           me.canvasLoading.play();
         }
-		*/
+    */
         if (me.currentVideo && me.currentVideo.id == this.id) {
-		  me.showLoading();
+          me.showLoading();
         }
 
         video.removeAttribute("ready");
@@ -522,32 +526,32 @@
           retryCount = retryCount + 1;
           video.setAttribute("retry", retryCount);
         } else {
-			
-			if (me.segErrTimer) clearInterval(me.segErrTimer);
-			var id=parseInt(video["id"]);
-			video.setAttribute("retry", "0");
-			var filesInfo=me.filesInfo;
-			var _id=id+1;
-			if(_id==(filesInfo.length-1)){
-				me.throwErrorInfo({
-					type: "lastVideoLoadingError",
-					code: "1004",
-					msg: "视频最后一片出错，放弃请求"
-				});
-				return false;
-			}
 
-			me.throwErrorInfo({
-				type: "videoLoadingError",
-				code: "1001",
-				msg: "当前video分片加载出现错误，将跳入下一片，当前分片id:"+id
-			});
-			
-			var time=filesInfo[_id].segTime+2;
-			
-			var total=me.totalDuration;
-			var percent=time/total;
-			me.setVideoStartTime(percent);
+          if (me.segErrTimer) clearInterval(me.segErrTimer);
+          var id = parseInt(video["id"]);
+          video.setAttribute("retry", "0");
+          var filesInfo = me.filesInfo;
+          var _id = id + 1;
+          if (_id == (filesInfo.length - 1)) {
+            me.throwErrorInfo({
+              type: "lastVideoLoadingError",
+              code: "1004",
+              msg: "视频最后一片出错，放弃请求"
+            });
+            return false;
+          }
+
+          me.throwErrorInfo({
+            type: "videoLoadingError",
+            code: "1001",
+            msg: "当前video分片加载出现错误，将跳入下一片，当前分片id:" + id
+          });
+
+          var time = filesInfo[_id].segTime + 2;
+
+          var total = me.totalDuration;
+          var percent = time / total;
+          me.setVideoStartTime(percent);
 
         }
       };
@@ -555,7 +559,7 @@
       var onVideoAbort = function() {
         var info = {
           type: "videoLoadingAbort",
-		  code:'1002',
+          code: '1002',
           msg: "video放弃加载此url:" + this.src
         };
         me.throwErrorInfo(info);
@@ -605,12 +609,12 @@
 
     destroy: function() {
       this.heartBeatTimer && clearInterval(this.heartBeatTimer);
-  	  if(this.heartBeatXhr){
-  		  this.heartBeatXhr.abort();
-  		  this.heartBeatXhr=null;
-  	  }
+      if (this.heartBeatXhr) {
+        this.heartBeatXhr.abort();
+        this.heartBeatXhr = null;
+      }
       //if (this.canvasLoading) this.canvasLoading = null;
-	  this.hideLoading();
+      this.hideLoading();
       if (this.videos) {
         for (var i = 0; i < this.videos.length; i++) {
           if (this.videos[i]) {
@@ -749,7 +753,7 @@
       var me = this;
       if (!me.bindFirst) {
         me.initLoadPlayer();
-		me.bindFirst=true;
+        me.bindFirst = true;
         if (me.options.playPauseCallBack) {
           me.options.playPauseCallBack(false);
         }
@@ -881,7 +885,7 @@
     sendHeartBeat: function(url) {
       var me = this;
       var xhr = new XMLHttpRequest();
-	  me.heartBeatXhr = xhr;
+      me.heartBeatXhr = xhr;
       xhr.onload = function() {
         if (this.status == "404") {
           me.heartBeatCount++;
@@ -889,7 +893,7 @@
             clearInterval(me.heartBeatTimer);
             var info = {
               type: "beatheartError",
-			  code:'1003',
+              code: '1003',
               msg: "尝试多次心跳无果，中止发送"
             };
             me.throwErrorInfo(info);
