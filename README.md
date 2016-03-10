@@ -91,7 +91,7 @@
 
 - `segErrorRetryNum` 分片请求错误重试次数
 
-- `sendLogCallBack`  当有错误时，获取到返回的信息
+- `throwErrorInfoCallBack`  当有错误时，获取到返回的信息
 
 - `breakTime`  从第几秒开始播放int类型
 
@@ -121,9 +121,11 @@
 
 - `indexUnavailable` 1000 m3u8索引文件请求失败或者无分片信息,当请求m3u8文件返回http code为4xx、5xx的时候或者返回的m3u8为空的时候【必】
 
-- `videoLoadingError` 1001 当前video分片加载出现错误【必】
+- `videoLoadingError` 1001 当前video分片加载出现错误，重试N次后,将跳入下一片
 
 - `videoLoadingAbort` 1002 video放弃加载
 
 - `beatheartError` 1003 尝试多次心跳无果，中止发送
+- 
+- `lastVideoLoadingError` 1004 视频最后一片出错，放弃请求
  

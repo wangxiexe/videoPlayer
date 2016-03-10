@@ -522,13 +522,33 @@
           retryCount = retryCount + 1;
           video.setAttribute("retry", retryCount);
         } else {
-          if (me.segErrTimer) clearInterval(me.segErrTimer);
-          me.throwErrorInfo({
-            type: "videoLoadingError",
-			code: "1001",
-            msg: "当前video分片加载出现错误"
-          });
-          video.setAttribute("retry", "0");
+			
+			if (me.segErrTimer) clearInterval(me.segErrTimer);
+			var id=parseInt(video["id"]);
+			video.setAttribute("retry", "0");
+			var filesInfo=me.filesInfo;
+			var _id=id+1;
+			if(_id==(filesInfo.length-1)){
+				me.throwErrorInfo({
+					type: "lastVideoLoadingError",
+					code: "1004",
+					msg: "视频最后一片出错，放弃请求"
+				});
+				return false;
+			}
+
+			me.throwErrorInfo({
+				type: "videoLoadingError",
+				code: "1001",
+				msg: "当前video分片加载出现错误，将跳入下一片，当前分片id:"+id
+			});
+			
+			var time=filesInfo[_id].segTime+2;
+			
+			var total=me.totalDuration;
+			var percent=time/total;
+			me.setVideoStartTime(percent);
+
         }
       };
 

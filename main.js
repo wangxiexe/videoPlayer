@@ -123,10 +123,11 @@
             defaultResolution: "640x480",
 			specifiedResolution : "600x600",
             playPauseButton: "play",
-			screenBtn:"screenBtn",
+			bigStartPlayButton:"screenBtn",
             progressCtn    : "progress",
             progressBar    : "progress-bar",
 			loadingContainerID:"loading",
+			segErrorRetryNum:2,
             playPauseCallBack: function(isPaused){
                 if (isPaused){
                     document.getElementById("play").innerHTML="播放";
@@ -152,7 +153,7 @@
 			onVolumeChange:function(v){
 				document.getElementById("currentVoice").innerHTML="当前声音值："+v;
 			},
-			sendLogCallBack:function(data){
+			throwErrorInfoCallBack:function(data){
 				document.getElementById("log").innerHTML=JSON.stringify(data);
 			},
 			onEndedCallBack:function(){
@@ -199,6 +200,7 @@
 	//var url="http://183.131.21.230:9000/test/test_m3u8/index.m3u8";
 	var url="http://183.131.21.230:9000/test/test_m3u8_2/index.m3u8";
 	var url="http://183.131.21.230:8080/test/test_m3u8_2/index.m3u8";
+	var url="http://183.131.21.230/downdata/15b87ea6908e4776bdc90ea50d20f7b4bd5726b476210553541b77ef75b69a20/index.m3u8";
 	createPlayer(url);
 
 })();
