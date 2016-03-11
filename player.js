@@ -4,19 +4,19 @@
 
   Date.prototype.formatForVideo = function(fmt) {
     var o = {
-      "M+" : this.getMonth()+1,                 //月份
-      "d+" : this.getDate(),                    //日
-      "h+" : this.getHours(),                   //小时
-      "m+" : this.getMinutes(),                 //分
-      "s+" : this.getSeconds(),                 //秒
-      "q+" : Math.floor((this.getMonth()+3)/3), //季度
-      "S"  : this.getMilliseconds()             //毫秒
+      "M+": this.getMonth() + 1, //月份
+      "d+": this.getDate(), //日
+      "h+": this.getHours(), //小时
+      "m+": this.getMinutes(), //分
+      "s+": this.getSeconds(), //秒
+      "q+": Math.floor((this.getMonth() + 3) / 3), //季度
+      "S": this.getMilliseconds() //毫秒
     };
-    if(/(y+)/.test(fmt))
-      fmt=fmt.replace(RegExp.$1, (this.getFullYear()+"").substr(4 - RegExp.$1.length));
-    for(var k in o)
-      if(new RegExp("("+ k +")").test(fmt))
-        fmt = fmt.replace(RegExp.$1, (RegExp.$1.length==1) ? (o[k]) : (("00"+ o[k]).substr((""+ o[k]).length)));
+    if (/(y+)/.test(fmt))
+      fmt = fmt.replace(RegExp.$1, (this.getFullYear() + "").substr(4 - RegExp.$1.length));
+    for (var k in o)
+      if (new RegExp("(" + k + ")").test(fmt))
+        fmt = fmt.replace(RegExp.$1, (RegExp.$1.length == 1) ? (o[k]) : (("00" + o[k]).substr(("" + o[k]).length)));
     return fmt;
   };
 
@@ -48,7 +48,7 @@
         indexErrorRetryNum: 5, //索引请求错误重试次数
         segErrorRetryNum: 5, //分片请求错误重试次数
         throwErrorInfoCallBack: null, //错误信息回调
-		isDebug:false
+        isDebug: false
       }
       if (options)
         this.extend(this.options, options);
@@ -64,7 +64,7 @@
       this.manifest = this.options.liveUrl;
       this.loadingContainer = this.getID(this.options.loadingContainerID);
       this.defaultImage = this.options.defaultImage || null;
-	  this.isDebug = this.options.isDebug || false;
+      this.isDebug = this.options.isDebug || false;
 
       //如果是PC端、非safari、且URL是直播形式URL
       if (this.options.url === "") {
@@ -84,30 +84,30 @@
         this.setDefault();
       } else {}
     },
-	
-	log:function(str){
-		if(this.isDebug){
-			console.log(this.formatForVideo(new Date(), "hh:mm:ss") + " >> " + str);
-		}
-	},
 
-	formatForVideo:function(date, fmt) {
-		var o = {
-		  "M+" : date.getMonth()+1,                 //月份
-		  "d+" : date.getDate(),                    //日
-		  "h+" : date.getHours(),                   //小时
-		  "m+" : date.getMinutes(),                 //分
-		  "s+" : date.getSeconds(),                 //秒
-		  "q+" : Math.floor((date.getMonth()+3)/3), //季度
-		  "S"  : date.getMilliseconds()             //毫秒
-		};
-		if(/(y+)/.test(fmt))
-		  fmt=fmt.replace(RegExp.$1, (date.getFullYear()+"").substr(4 - RegExp.$1.length));
-		for(var k in o)
-		  if(new RegExp("("+ k +")").test(fmt))
-			fmt = fmt.replace(RegExp.$1, (RegExp.$1.length==1) ? (o[k]) : (("00"+ o[k]).substr((""+ o[k]).length)));
-		return fmt;
-	},
+    log: function(str) {
+      if (this.isDebug) {
+        console.log(this.formatForVideo(new Date(), "hh:mm:ss") + " >> " + str);
+      }
+    },
+
+    formatForVideo: function(date, fmt) {
+      var o = {
+        "M+": date.getMonth() + 1, //月份
+        "d+": date.getDate(), //日
+        "h+": date.getHours(), //小时
+        "m+": date.getMinutes(), //分
+        "s+": date.getSeconds(), //秒
+        "q+": Math.floor((date.getMonth() + 3) / 3), //季度
+        "S": date.getMilliseconds() //毫秒
+      };
+      if (/(y+)/.test(fmt))
+        fmt = fmt.replace(RegExp.$1, (date.getFullYear() + "").substr(4 - RegExp.$1.length));
+      for (var k in o)
+        if (new RegExp("(" + k + ")").test(fmt))
+          fmt = fmt.replace(RegExp.$1, (RegExp.$1.length == 1) ? (o[k]) : (("00" + o[k]).substr(("" + o[k]).length)));
+      return fmt;
+    },
 
     setDefault: function() {
       //this.canvasLoading.drawDefault();
@@ -417,7 +417,7 @@
           me.showLoading();
         }
 
-		me.log("loadstart#" + this.id)
+        me.log("loadstart#" + this.id)
 
         //var retry = this.getAttribute("retry");
         //if (!retry) this.setAttribute("retry", "0");
@@ -429,17 +429,14 @@
         //this.setAttribute("retry", "0");
         me.hideLoading();
         this.setAttribute("ready", "1");
-
+        me.log("canplay#" + this.id + ", current id#" + (me.currentVideo ? me.currentVideo.id : "null"))
         if (me.currentVideo && this.id == me.currentVideo.id) {
-
-			me.log("canplay#" + this.id)
-
-			this.play()
+          this.play()
         };
         if (this.id == me.nextIndex && !me.currentVideo) {
           this.currentTime = 0;
           this.play();
-		  me.log("will play first seg#" + this.id)
+          me.log("will play first seg#" + this.id)
         }
         if (me.isTriggerSeek) {
           me.options.onSeekEndCallBack && me.options.onSeekEndCallBack();
@@ -480,7 +477,7 @@
           me.currentVideo = this;
           me.nextIndex++;
 
-		  me.log("play#" + this.id)
+          me.log("play#" + this.id)
 
         }
 
@@ -489,7 +486,7 @@
           if (isReay != "1") {
             me.videos[me.nextIndex].src = me.videos[me.nextIndex].getAttribute("url");
             me.videos[me.nextIndex].load();
-			me.log("loadNext#" + me.nextIndex)
+            me.log("loadNext#" + me.nextIndex)
 
           }
         }
@@ -512,11 +509,25 @@
           }
         }
 
-		me.log("end#" + this.id)
+        me.log("end#" + this.id)
 
         if (me.nextIndex in me.videos) {
+
           var isReay = me.videos[me.nextIndex].getAttribute("ready");
-          if (isReay == "1") me.videos[me.nextIndex].play();
+          me.log("isReady#" + isReay + "id#" + me.nextIndex);
+          if (isReay == "1") {
+            me.videos[me.nextIndex].play();
+          } else {
+            me.showLoading();
+            me.retryPlayTimer = setInterval(function() {
+              var _isReady = me.videos[me.nextIndex].getAttribute("ready");
+              if (_isReady == "1") {
+                clearInterval(me.retryPlayTimer);
+                me.videos[me.nextIndex].play();
+              }
+            }, 500);
+          }
+
         }
       };
 
@@ -536,12 +547,12 @@
         video.oAjax.onreadystatechange = function() {
           if (video.oAjax.readyState == 4) {
 
-			me.log("error#" + video.id + ", status#" + video.oAjax.status)
-			
+            me.log("error#" + video.id + ", status#" + video.oAjax.status)
+
             if (video.oAjax.status == 200 || video.oAjax.status == 202) {
 
-			  me.log("error#" + video.id + ", video ready clear timer#" + video.segErrTimer + ", retryCount#" + retryCount)
-				
+              me.log("error#" + video.id + ", video ready clear timer#" + video.segErrTimer + ", retryCount#" + retryCount)
+
               video.segErrTimer && clearTimeout(video.segErrTimer);
               video.load();
             } else {
@@ -560,7 +571,7 @@
                 var id = parseInt(video["id"]);
                 var filesInfo = me.filesInfo;
                 var _id = id + 1;
-				me.log("error#" + video.id + ", video broken#" + video.id + ", next#" + _id + ", filesInfo#" + filesInfo.length)
+                me.log("error#" + video.id + ", video broken#" + video.id + ", next#" + _id + ", filesInfo#" + filesInfo.length)
                 if (id >= (filesInfo.length - 1)) {
                   me.throwErrorInfo({
                     type: "lastVideoLoadingError",
@@ -716,14 +727,13 @@
       me.seekTime = 0;
       var currentTime = me.totalDuration * seekPercent;
       var seekIndex = 0;
+      me.retryPlayTimer && clearInterval(me.retryPlayTimer);
 
       if (me.currentVideo) {
         if (me.currentVideo.segErrTimer) {
           clearTimeout(me.currentVideo.segErrTimer);
         }
-        //me.currentVideo.setAttribute("retry","0");
         me.currentVideo.pause();
-
       }
 
       me.seekTime = currentTime;
@@ -841,10 +851,11 @@
         return false;
       }
       if (me.isEnded) {
-        //me.videos[0].load();
+        me.videos[0].load();
         me.isEnded = false;
       }
       if (me.currentVideo && me.currentVideo.paused) {
+        me.retryPlayTimer && clearInterval(me.retryPlayTimer);
         me.currentVideo["play"]();
       } else if (me.currentVideo) {
         me.currentVideo["pause"]();
