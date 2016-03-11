@@ -127,6 +127,7 @@
             progressCtn    : "progress",
             progressBar    : "progress-bar",
 			loadingContainerID:"loading",
+			isDebug:true,
 			//segErrorRetryNum:2,
             playPauseCallBack: function(isPaused){
                 if (isPaused){
