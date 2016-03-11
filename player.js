@@ -544,7 +544,6 @@
 				
               video.segErrTimer && clearTimeout(video.segErrTimer);
               video.load();
-			  video.play();
             } else {
               if (retryCount < me.options.segErrorRetryNum) {
                 video.segErrTimer && clearTimeout(video.segErrTimer);
