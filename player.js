@@ -919,7 +919,7 @@
         me.heartBeatCount = 0;
       }
       this.heartBeatTimer = setInterval(function() {
-        //me.sendHeartBeat(url);
+        me.sendHeartBeat(url);
       }, 5000);
     },
     heartBeatCount: 0,
