@@ -692,6 +692,7 @@
 
     destroy: function() {
       this.heartBeatTimer && clearInterval(this.heartBeatTimer);
+	  this.retryPlayTimer && clearInterval(this.retryPlayTimer);
       if (this.heartBeatXhr) {
         this.heartBeatXhr.abort();
         this.heartBeatXhr = null;
