@@ -203,6 +203,7 @@
 	var url="http://183.131.21.230:9000/test/test_m3u8_2/index.m3u8";
 	var url="http://183.131.21.230:8080/test/test_m3u8_2/index.m3u8";
 	var url="http://183.131.21.230/downdata/15b87ea6908e4776bdc90ea50d20f7b4bd5726b476210553541b77ef75b69a20/index.m3u8";
+	var url="https://mivideo-player-hz.ksyun.com/downdata/10.4.23.112/815dbb58658be98951eac4640f8f434e14d86ed366bb589bb499c7fb9c7542ab/index.m3u8?keyid=1445938231337&nonce=275402&expires=1457770343&signature=9Zr6NUyyHLfvNK5JHc4fCyOJY68";
 	createPlayer(url);
 
 })();

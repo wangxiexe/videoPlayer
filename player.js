@@ -544,6 +544,7 @@
 				
               video.segErrTimer && clearTimeout(video.segErrTimer);
               video.load();
+			  video.play();
             } else {
               if (retryCount < me.options.segErrorRetryNum) {
                 video.segErrTimer && clearTimeout(video.segErrTimer);
@@ -561,7 +562,7 @@
                 var filesInfo = me.filesInfo;
                 var _id = id + 1;
 				me.log("error#" + video.id + ", video broken#" + video.id + ", next#" + _id + ", filesInfo#" + filesInfo.length)
-                if (_id == (filesInfo.length - 1)) {
+                if (id >= (filesInfo.length - 1)) {
                   me.throwErrorInfo({
                     type: "lastVideoLoadingError",
                     code: "1004",
