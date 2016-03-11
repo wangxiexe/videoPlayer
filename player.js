@@ -2,7 +2,7 @@
   root = this;
   window.requestAnimationFrame = window.requestAnimationFrame || window.mozRequestAnimationFrame || window.webkitRequestAnimationFrame || window.msRequestAnimationFrame || setTimeout;
 
-  Date.prototype.format = function(fmt) {
+  Date.prototype.formatForVideo = function(fmt) {
     var o = {
       "M+" : this.getMonth()+1,                 //月份
       "d+" : this.getDate(),                    //日
@@ -390,7 +390,7 @@
         if (me.currentVideo && me.currentVideo.id == this.id) {
           me.showLoading();
         }
-        console.log(new Date().format("hh:mm:ss") + ">> loadstart#" + this.id)
+        console.log(new Date().formatForVideo("hh:mm:ss") + ">> loadstart#" + this.id)
         //var retry = this.getAttribute("retry");
         //if (!retry) this.setAttribute("retry", "0");
       };
@@ -403,13 +403,13 @@
         this.setAttribute("ready", "1");
 
         if (me.currentVideo && this.id == me.currentVideo.id) {
-          console.log(new Date().format("hh:mm:ss") + ">> canplay#" + this.id)
+          console.log(new Date().formatForVideo("hh:mm:ss") + ">> canplay#" + this.id)
           this.play()
         };
         if (this.id == me.nextIndex && !me.currentVideo) {
           this.currentTime = 0;
           this.play();
-          console.log(new Date().format("hh:mm:ss") + ">> will play first seg#" + this.id)
+          console.log(new Date().formatForVideo("hh:mm:ss") + ">> will play first seg#" + this.id)
         }
         if (me.isTriggerSeek) {
           me.options.onSeekEndCallBack && me.options.onSeekEndCallBack();
@@ -449,7 +449,7 @@
 
           me.currentVideo = this;
           me.nextIndex++;
-          console.log(new Date().format("hh:mm:ss") + ">> play#" + this.id)
+          console.log(new Date().formatForVideo("hh:mm:ss") + ">> play#" + this.id)
         }
 
         if (me.nextIndex in me.videos) {
@@ -457,7 +457,7 @@
           if (isReay != "1") {
             me.videos[me.nextIndex].src = me.videos[me.nextIndex].getAttribute("url");
             me.videos[me.nextIndex].load();
-            console.log(new Date().format("hh:mm:ss") + ">> loadNext#" + me.nextIndex)
+            console.log(new Date().formatForVideo("hh:mm:ss") + ">> loadNext#" + me.nextIndex)
           }
         }
         me.nextFrame();
@@ -478,7 +478,7 @@
             me.nextIndex = 0;
           }
         }
-        console.log(new Date().format("hh:mm:ss") + ">> end#" + this.id)
+        console.log(new Date().formatForVideo("hh:mm:ss") + ">> end#" + this.id)
         if (me.nextIndex in me.videos) {
           var isReay = me.videos[me.nextIndex].getAttribute("ready");
           if (isReay == "1") me.videos[me.nextIndex].play();
@@ -500,9 +500,9 @@
         video.oAjax.open("GET", video.src, true);
         video.oAjax.onreadystatechange = function() {
           if (video.oAjax.readyState == 4) {
-            console.log(new Date().format("hh:mm:ss") + ">> error#" + video.id + ", status#" + video.oAjax.status)
+            console.log(new Date().formatForVideo("hh:mm:ss") + ">> error#" + video.id + ", status#" + video.oAjax.status)
             if (video.oAjax.status == 200 || video.oAjax.status == 202) {
-              console.log(new Date().format("hh:mm:ss") + ">> error#" + video.id + ", video ready clear timer#" + video.segErrTimer + ", retryCount#" + retryCount)
+              console.log(new Date().formatForVideo("hh:mm:ss") + ">> error#" + video.id + ", video ready clear timer#" + video.segErrTimer + ", retryCount#" + retryCount)
               video.segErrTimer && clearTimeout(video.segErrTimer);
               video.load();
             } else {
@@ -512,11 +512,11 @@
                   video.oAjax.open("GET", video.src, true);
                   retryCount++;
                   video.oAjax.send();
-                  console.log(new Date().format("hh:mm:ss") + ">> error#" + video.id + ", retryCount#" + retryCount)
+                  console.log(new Date().formatForVideo("hh:mm:ss") + ">> error#" + video.id + ", retryCount#" + retryCount)
                 }, 2000);
 
               } else {
-                console.log(new Date().format("hh:mm:ss") + ">> error#" + video.id + ", retryCount#" + retryCount)
+                console.log(new Date().formatForVideo("hh:mm:ss") + ">> error#" + video.id + ", retryCount#" + retryCount)
                 if (video.segErrTimer) clearTimeout(video.segErrTimer);
                 var id = parseInt(video["id"]);
                 var filesInfo = me.filesInfo;
@@ -543,7 +543,7 @@
             }
           }
         }
-        console.log(new Date().format("hh:mm:ss") + ">> error#" + this.id + ", retryCount#" + retryCount)
+        console.log(new Date().formatForVideo("hh:mm:ss") + ">> error#" + this.id + ", retryCount#" + retryCount)
         video.oAjax.send();
         /*
                 var retryCount = parseInt(video.getAttribute("retry"));
@@ -616,7 +616,7 @@
 
       video.removeEvent = function() {
         video.removeEventListener('loadstart', onLoadStart);
-        video.removeEventListener('loadedmetadata', onLoadedMetaData);
+        //video.removeEventListener('loadedmetadata', onLoadedMetaData);
         video.removeEventListener('play', onPlay);
         video.removeEventListener('ended', onEnded);
         video.removeEventListener('abort', onVideoAbort);
