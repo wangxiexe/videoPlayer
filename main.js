@@ -127,7 +127,7 @@
             progressCtn    : "progress",
             progressBar    : "progress-bar",
 			loadingContainerID:"loading",
-			segErrorRetryNum:2,
+			//segErrorRetryNum:2,
             playPauseCallBack: function(isPaused){
                 if (isPaused){
                     document.getElementById("play").innerHTML="播放";
@@ -155,6 +155,7 @@
 			},
 			throwErrorInfoCallBack:function(data){
 				document.getElementById("log").innerHTML=JSON.stringify(data);
+				console.log(JSON.stringify(data));
 			},
 			onEndedCallBack:function(){
 				document.getElementById("play").innerHTML="再次播放";

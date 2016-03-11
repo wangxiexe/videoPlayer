@@ -2,6 +2,24 @@
   root = this;
   window.requestAnimationFrame = window.requestAnimationFrame || window.mozRequestAnimationFrame || window.webkitRequestAnimationFrame || window.msRequestAnimationFrame || setTimeout;
 
+  Date.prototype.format = function(fmt) {
+    var o = {
+      "M+" : this.getMonth()+1,                 //月份
+      "d+" : this.getDate(),                    //日
+      "h+" : this.getHours(),                   //小时
+      "m+" : this.getMinutes(),                 //分
+      "s+" : this.getSeconds(),                 //秒
+      "q+" : Math.floor((this.getMonth()+3)/3), //季度
+      "S"  : this.getMilliseconds()             //毫秒
+    };
+    if(/(y+)/.test(fmt))
+      fmt=fmt.replace(RegExp.$1, (this.getFullYear()+"").substr(4 - RegExp.$1.length));
+    for(var k in o)
+      if(new RegExp("("+ k +")").test(fmt))
+        fmt = fmt.replace(RegExp.$1, (RegExp.$1.length==1) ? (o[k]) : (("00"+ o[k]).substr((""+ o[k]).length)));
+    return fmt;
+  };
+
   function PlayerBase() {
     this.initilize.apply(this, arguments);
   };
@@ -369,34 +387,29 @@
 
       var onLoadStart = function() {
         if (!this.src) return;
-        /*
-        if (me.currentVideo && me.canvasLoading.stopped && me.currentVideo.id == this.id) {
-          me.canvas.width = me.canvasLoading.width;
-          me.canvas.height = me.canvasLoading.height;
-          me.canvasLoading.play();
-        }
-    */
         if (me.currentVideo && me.currentVideo.id == this.id) {
           me.showLoading();
         }
-        var retry = this.getAttribute("retry");
-        if (!retry) this.setAttribute("retry", "0");
+        console.log(new Date().format("hh:mm:ss") + ">> loadstart#" + this.id)
+        //var retry = this.getAttribute("retry");
+        //if (!retry) this.setAttribute("retry", "0");
       };
 
       var onCanPlay = function() {
         if (!me.isBindSeek) me.bindSeekEvent();
-        if (me.segErrTimer) clearInterval(me.segErrTimer)
-        this.setAttribute("retry", "0");
-
-        //if (!me.canvasLoading.stopped) me.canvasLoading.stop();
+        //if (this.segErrTimer) clearTimeout(this.segErrTimer)
+        //this.setAttribute("retry", "0");
         me.hideLoading();
-
         this.setAttribute("ready", "1");
 
-        if (me.currentVideo && this.id == me.currentVideo.id) this.play();
+        if (me.currentVideo && this.id == me.currentVideo.id) {
+          console.log(new Date().format("hh:mm:ss") + ">> canplay#" + this.id)
+          this.play()
+        };
         if (this.id == me.nextIndex && !me.currentVideo) {
           this.currentTime = 0;
           this.play();
+          console.log(new Date().format("hh:mm:ss") + ">> will play first seg#" + this.id)
         }
         if (me.isTriggerSeek) {
           me.options.onSeekEndCallBack && me.options.onSeekEndCallBack();
@@ -404,11 +417,11 @@
         }
       };
 
-      var onLoadedMetaData = function() {
-        if (me.canvas.width !== this.videoWidth || me.canvas.height !== this.videoHeight) {
-          me.options.onLoadedMetaData && me.options.onLoadedMetaData(me.canvas)
-        }
-      };
+      // var onLoadedMetaData = function() {
+      //   if (me.canvas.width !== this.videoWidth || me.canvas.height !== this.videoHeight) {
+      //     me.options.onLoadedMetaData && me.options.onLoadedMetaData(me.canvas)
+      //   }
+      // };
 
       var onTimeUpdate = function() {
         var time, playTime = this.currentTime + data.segTime;
@@ -429,13 +442,14 @@
       };
 
       var onPlay = function() {
-        if (me.segErrTimer) clearInterval(me.segErrTimer);
+        if (this.segErrTimer) clearTimeout(this.segErrTimer);
         if (me.currentVideo !== this) {
           //防止video标签缓存播放时间
           if (this.currentTime != 0) this.currentTime = 0;
 
           me.currentVideo = this;
           me.nextIndex++;
+          console.log(new Date().format("hh:mm:ss") + ">> play#" + this.id)
         }
 
         if (me.nextIndex in me.videos) {
@@ -443,6 +457,7 @@
           if (isReay != "1") {
             me.videos[me.nextIndex].src = me.videos[me.nextIndex].getAttribute("url");
             me.videos[me.nextIndex].load();
+            console.log(new Date().format("hh:mm:ss") + ">> loadNext#" + me.nextIndex)
           }
         }
         me.nextFrame();
@@ -463,67 +478,114 @@
             me.nextIndex = 0;
           }
         }
-
+        console.log(new Date().format("hh:mm:ss") + ">> end#" + this.id)
         if (me.nextIndex in me.videos) {
-          me.videos[me.nextIndex].play();
+          var isReay = me.videos[me.nextIndex].getAttribute("ready");
+          if (isReay == "1") me.videos[me.nextIndex].play();
         }
       };
 
       var onVideoError = function() {
         var video = this;
         if (me.isTriggerSeek) me.isTriggerSeek = false;
-        /*
-        if (me.currentVideo && me.canvasLoading.stopped && me.currentVideo.id == this.id) {
-          me.canvas.width = me.canvasLoading.width;
-          me.canvas.height = me.canvasLoading.height;
-          me.canvas.setAttribute("width", me.canvasLoading.width);
-          me.canvas.setAttribute("height", me.canvasLoading.height);
-          me.canvasLoading.play();
-        }
-    */
         if (me.currentVideo && me.currentVideo.id == this.id) {
           me.showLoading();
         }
 
         video.removeAttribute("ready");
 
-        var retryCount = parseInt(video.getAttribute("retry"));
-        if (retryCount < me.options.segErrorRetryNum) {
-          if (me.segErrTimer) clearInterval(me.segErrTimer);
-          me.segErrTimer = setTimeout(function() {
-            video.load();
-          }, 2000)
-          retryCount = retryCount + 1;
-          video.setAttribute("retry", retryCount);
-        } else {
+        var retryCount = 1;
+        video.oAjax = new XMLHttpRequest();
 
-          if (me.segErrTimer) clearInterval(me.segErrTimer);
-          var id = parseInt(video["id"]);
-          video.setAttribute("retry", "0");
-          var filesInfo = me.filesInfo;
-          var _id = id + 1;
-          if (_id == (filesInfo.length - 1)) {
-            me.throwErrorInfo({
-              type: "lastVideoLoadingError",
-              code: "1004",
-              msg: "视频最后一片出错，放弃请求"
-            });
-            return false;
+        video.oAjax.open("GET", video.src, true);
+        video.oAjax.onreadystatechange = function() {
+          if (video.oAjax.readyState == 4) {
+            console.log(new Date().format("hh:mm:ss") + ">> error#" + video.id + ", status#" + video.oAjax.status)
+            if (video.oAjax.status == 200 || video.oAjax.status == 202) {
+              console.log(new Date().format("hh:mm:ss") + ">> error#" + video.id + ", video ready clear timer#" + video.segErrTimer + ", retryCount#" + retryCount)
+              video.segErrTimer && clearTimeout(video.segErrTimer);
+              video.load();
+            } else {
+              if (retryCount < me.options.segErrorRetryNum) {
+                video.segErrTimer && clearTimeout(video.segErrTimer);
+                video.segErrTimer = setTimeout(function() {
+                  video.oAjax.open("GET", video.src, true);
+                  retryCount++;
+                  video.oAjax.send();
+                  console.log(new Date().format("hh:mm:ss") + ">> error#" + video.id + ", retryCount#" + retryCount)
+                }, 2000);
+
+              } else {
+                console.log(new Date().format("hh:mm:ss") + ">> error#" + video.id + ", retryCount#" + retryCount)
+                if (video.segErrTimer) clearTimeout(video.segErrTimer);
+                var id = parseInt(video["id"]);
+                var filesInfo = me.filesInfo;
+                var _id = id + 1;
+                if (_id == (filesInfo.length - 1)) {
+                  me.throwErrorInfo({
+                    type: "lastVideoLoadingError",
+                    code: "1004",
+                    msg: "视频最后一片出错，放弃请求"
+                  });
+                  return false;
+                }
+
+                me.throwErrorInfo({
+                  type: "videoLoadingError",
+                  code: "1001",
+                  msg: "当前video分片加载出现错误，将跳入下一片，当前分片id:" + id
+                });
+                var time = filesInfo[_id].segTime + 2;
+                var total = me.totalDuration;
+                var percent = time / total;
+                me.setVideoStartTime(percent);
+              }
+            }
           }
-
-          me.throwErrorInfo({
-            type: "videoLoadingError",
-            code: "1001",
-            msg: "当前video分片加载出现错误，将跳入下一片，当前分片id:" + id
-          });
-
-          var time = filesInfo[_id].segTime + 2;
-
-          var total = me.totalDuration;
-          var percent = time / total;
-          me.setVideoStartTime(percent);
-
         }
+        console.log(new Date().format("hh:mm:ss") + ">> error#" + this.id + ", retryCount#" + retryCount)
+        video.oAjax.send();
+        /*
+                var retryCount = parseInt(video.getAttribute("retry"));
+                if (retryCount < me.options.segErrorRetryNum) {
+                  if (this.segErrTimer) clearTimeout(this.segErrTimer);
+
+                  this.segErrTimer = setTimeout(function() {
+                    video.load();
+                  }, 2000);
+
+                  retryCount = retryCount + 1;
+                  video.setAttribute("retry", retryCount);
+                } else {
+
+                  if (this.segErrTimer) clearTimeout(this.segErrTimer);
+                  var id = parseInt(video["id"]);
+                  video.setAttribute("retry", "0");
+                  var filesInfo = me.filesInfo;
+                  var _id = id + 1;
+                  if (_id == (filesInfo.length - 1)) {
+                    me.throwErrorInfo({
+                      type: "lastVideoLoadingError",
+                      code: "1004",
+                      msg: "视频最后一片出错，放弃请求"
+                    });
+                    return false;
+                  }
+
+                  me.throwErrorInfo({
+                    type: "videoLoadingError",
+                    code: "1001",
+                    msg: "当前video分片加载出现错误，将跳入下一片，当前分片id:" + id
+                  });
+
+                  var time = filesInfo[_id].segTime + 2;
+
+                  var total = me.totalDuration;
+                  var percent = time / total;
+                  me.setVideoStartTime(percent);
+
+                }
+        */
       };
 
       var onVideoAbort = function() {
@@ -542,7 +604,7 @@
       };
 
       video.addEventListener('loadstart', onLoadStart);
-      video.addEventListener('loadedmetadata', onLoadedMetaData);
+      //video.addEventListener('loadedmetadata', onLoadedMetaData);
       video.addEventListener('play', onPlay);
       video.addEventListener('ended', onEnded);
       video.addEventListener('abort', onVideoAbort);
@@ -588,6 +650,7 @@
       if (this.videos) {
         for (var i = 0; i < this.videos.length; i++) {
           if (this.videos[i]) {
+            if (this.videos[i].segErrTimer) clearTimeout(this.videos[i].segErrTimer);
             this.videos[i].removeEvent();
             this.videos[i].pause();
           }
@@ -595,11 +658,12 @@
           delete this.videos[i];
         }
       }
+
       this.videos = null;
       this.currentVideo = null;
       this.filesInfo = null;
       this.context = null;
-      if (this.segErrTimer) clearInterval(this.segErrTimer);
+
       if (this.indexErrTimer) clearInterval(this.indexErrTimer);
       if (this.ajax) {
         this.ajax.abort();
@@ -613,7 +677,14 @@
       var currentTime = me.totalDuration * seekPercent;
       var seekIndex = 0;
 
-      if (me.currentVideo) me.currentVideo.pause();
+      if (me.currentVideo) {
+        if (me.currentVideo.segErrTimer) {
+          clearTimeout(me.currentVideo.segErrTimer);
+        }
+        //me.currentVideo.setAttribute("retry","0");
+        me.currentVideo.pause();
+
+      }
 
       me.seekTime = currentTime;
 
@@ -730,7 +801,7 @@
         return false;
       }
       if (me.isEnded) {
-        me.videos[0].load();
+        //me.videos[0].load();
         me.isEnded = false;
       }
       if (me.currentVideo && me.currentVideo.paused) {
@@ -848,7 +919,7 @@
         me.heartBeatCount = 0;
       }
       this.heartBeatTimer = setInterval(function() {
-        me.sendHeartBeat(url);
+        //me.sendHeartBeat(url);
       }, 5000);
     },
     heartBeatCount: 0,
