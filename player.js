@@ -616,7 +616,7 @@
 
       video.removeEvent = function() {
         video.removeEventListener('loadstart', onLoadStart);
-        video.removeEventListener('loadedmetadata', onLoadedMetaData);
+        //video.removeEventListener('loadedmetadata', onLoadedMetaData);
         video.removeEventListener('play', onPlay);
         video.removeEventListener('ended', onEnded);
         video.removeEventListener('abort', onVideoAbort);
