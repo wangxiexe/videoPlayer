@@ -2,24 +2,6 @@
   root = this;
   window.requestAnimationFrame = window.requestAnimationFrame || window.mozRequestAnimationFrame || window.webkitRequestAnimationFrame || window.msRequestAnimationFrame || setTimeout;
 
-  Date.prototype.formatForVideo = function(fmt) {
-    var o = {
-      "M+": this.getMonth() + 1, //月份
-      "d+": this.getDate(), //日
-      "h+": this.getHours(), //小时
-      "m+": this.getMinutes(), //分
-      "s+": this.getSeconds(), //秒
-      "q+": Math.floor((this.getMonth() + 3) / 3), //季度
-      "S": this.getMilliseconds() //毫秒
-    };
-    if (/(y+)/.test(fmt))
-      fmt = fmt.replace(RegExp.$1, (this.getFullYear() + "").substr(4 - RegExp.$1.length));
-    for (var k in o)
-      if (new RegExp("(" + k + ")").test(fmt))
-        fmt = fmt.replace(RegExp.$1, (RegExp.$1.length == 1) ? (o[k]) : (("00" + o[k]).substr(("" + o[k]).length)));
-    return fmt;
-  };
-
   function PlayerBase() {
     this.initilize.apply(this, arguments);
   };
@@ -173,12 +155,14 @@
       if (this.loadingContainer) {
         this.loadingContainer.style.display = "block";
       }
+	  this.isLockOperation=true;
     },
 
     hideLoading: function() {
       if (this.loadingContainer) {
         this.loadingContainer.style.display = "none";
       }
+	  this.isLockOperation=false;
     },
 
     initLoadPlayer: function() {
@@ -196,6 +180,7 @@
       //错误重试变量
       this.indexErrRetry = 0;
       this.indexErrTimer = 0;
+	  this.isLockOperation=false;
       this.initLivePlayIndex();
     },
 
@@ -816,12 +801,18 @@
         bigStartPlayButton = this.bigStartPlayButton;
       if (button) {
         button.addEventListener('click', function() {
+		  if(converter.isLockOperation){
+			  return false;
+		  }
           converter.setPause();
         });
       }
 
       if (button && bigStartPlayButton) {
         bigStartPlayButton.addEventListener('click', function() {
+		  if(converter.isLockOperation){
+			  return false;
+		  }
           converter.setPause();
         });
       }
@@ -829,6 +820,9 @@
       var container = this.container;
       if (container) {
         container.addEventListener('click', function() {
+		  if(converter.isLockOperation){
+			  return false;
+		  }
           converter.setPause();
         });
       }
@@ -836,6 +830,9 @@
       var screenBtn = this.screenBtn;
       if (screenBtn) {
         screenBtn.addEventListener('click', function() {
+		  if(converter.isLockOperation){
+			  return false;
+		  }
           converter.setPause();
         });
       }
