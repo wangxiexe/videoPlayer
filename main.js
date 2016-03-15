@@ -203,7 +203,7 @@
 	var url="http://183.131.21.230:9000/test/test_m3u8_2/index.m3u8";
 	var url="http://183.131.21.230:8080/test/test_m3u8_2/index.m3u8";
 	var url="http://183.131.21.230/downdata/15b87ea6908e4776bdc90ea50d20f7b4bd5726b476210553541b77ef75b69a20/index.m3u8";
-	var url="https://mivideo-player-yz.ksyun.com/downdata/10.12.23.141/ea893ecd07efb8e31830dbf2b53dc18f4a4fe01604c6781a170444d709c3c7be/index.m3u8?keyid=1445938231337&nonce=988852&expires=1458018788&signature=cxx4ddRYKmGrbiB9fUzICXrVRRc";
+	//var url="https://mivideo-player-yz.ksyun.com/downdata/10.12.23.141/9a950761b3ae94c8928c36e21de424f795aeee0eedd5ed0e6f747d6a400810be/index.m3u8?keyid=1445938231337&nonce=1826&expires=1458037182&signature=DJsBODQaiRRDUdqBrKfmOc7-2Ls";
 	createPlayer(url);
 
 })();

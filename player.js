@@ -558,10 +558,16 @@
                 var _id = id + 1;
                 me.log("error#" + video.id + ", video broken#" + video.id + ", next#" + _id + ", filesInfo#" + filesInfo.length)
                 if (id >= (filesInfo.length - 1)) {
+					var isReady="0";
+					if(filesInfo.length>1){
+						isReady=me.videos[filesInfo.length-2].getAttribute("ready");	
+					}
+					
                   me.throwErrorInfo({
                     type: "lastVideoLoadingError",
                     code: "1004",
-                    msg: "视频最后一片出错，放弃请求"
+                    msg: "视频最后一片出错，放弃请求",
+					isReady:isReady
                   });
                   return false;
                 }
