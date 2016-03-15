@@ -121,11 +121,17 @@
 
 - `indexUnavailable` 1000 m3u8索引文件请求失败或者无分片信息,当请求m3u8文件返回http code为4xx、5xx的时候或者返回的m3u8为空的时候【必】
 
-- `videoLoadingError` 1001 当前video分片加载出现错误，重试N次后,将跳入下一片
+- `videoLoadingError` 1001 当前video分片加载出现错误，重试N次后,将跳入下一片【参考注释1】
 
 - `videoLoadingAbort` 1002 video放弃加载
 
 - `beatheartError` 1003 尝试多次心跳无果，中止发送
 
 - `lastVideoLoadingError` 1004 视频最后一片出错，放弃请求【必】
+###注释1
+注意：出现1001时，分两种情况
+
+- `secondLastIsReady` 1 最后一片出错，但倒数第二片没有出错
+
+- `secondLastIsReady` 0|null|undefined 最后一片出错，倒数第二片也出错
  
