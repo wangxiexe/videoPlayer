@@ -567,7 +567,7 @@
                     type: "lastVideoLoadingError",
                     code: "1004",
                     msg: "视频最后一片出错，放弃请求",
-					isReady:isReady
+					secondLastIsReady:isReady
                   });
                   return false;
                 }
