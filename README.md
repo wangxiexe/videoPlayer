@@ -1,11 +1,11 @@
-#播放器API
-###sdk简介
+# 播放器API
+
+### sdk简介
+
 目前demon不添加样式，可以自定义样式
 
-###快速入门
+### 快速入门
 	<script type="text/javascript" src="player.js"></script>
-
-###
 	<script type="text/javascript">
 		 var createPlayer = function(videoUrl){
 	        var option= {
@@ -60,7 +60,7 @@
 - `isLive` 是否是直播
 
 - `defaultResolution` 默认容器的宽高，视频文件会按这个的大小来自动适配
-- 
+
 - `playPauseButton` 播放、暂停的切换按钮
 
 - `progressCtn` 进度容器id,可以用css控制外边的边框，以及背景等样式
@@ -99,7 +99,8 @@
 
 - `specifiedResolution`  自定义分辨率
 
-###声音控制
+### 声音控制
+
 	//示例
 	var option={.....}
     var player = new PlayerBase(option);
@@ -113,7 +114,7 @@
 
 - `setMute(bool)` 设置静音,bool:false为开启声音,true为静音
 
-###返回错误说明
+### 返回错误说明
  
 `type`: 错误状态标示，`code`: 错误代码; `msg`:对错误状态标示的解释
 
@@ -128,7 +129,9 @@
 - `beatheartError` 1003 尝试多次心跳无果，中止发送
 
 - `lastVideoLoadingError` 1004 视频最后一片出错，放弃请求【必】
+
 ###注释1
+
 注意：出现1001时，分两种情况
 
 - `secondLastIsReady` 1 最后一片出错，但倒数第二片没有出错

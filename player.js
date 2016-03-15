@@ -62,7 +62,6 @@
                     this.container.appendChild(this.canvas); //加载默认图片
                 }
 
-                //this.initLoadPlayer();
                 this.setDefault();
             } else {
             }
@@ -425,12 +424,6 @@
                 }
             };
 
-            // var onLoadedMetaData = function() {
-            //   if (me.canvas.width !== this.videoWidth || me.canvas.height !== this.videoHeight) {
-            //     me.options.onLoadedMetaData && me.options.onLoadedMetaData(me.canvas)
-            //   }
-            // };
-
             var onTimeUpdate = function () {
                 var time, playTime = this.currentTime + data.segTime;
 
@@ -610,7 +603,6 @@
             };
 
             video.addEventListener('loadstart', onLoadStart);
-            //video.addEventListener('loadedmetadata', onLoadedMetaData);
             video.addEventListener('play', onPlay);
             video.addEventListener('ended', onEnded);
             video.addEventListener('abort', onVideoAbort);
@@ -618,18 +610,16 @@
             video.addEventListener('canplay', onCanPlay);
             video.addEventListener('timeupdate', onTimeUpdate);
             video.addEventListener('stalled', onVideoError);
-            //video.addEventListener('volumechange', onVideoVoiceChange);
 
             video.removeEvent = function () {
                 video.removeEventListener('loadstart', onLoadStart);
-                //video.removeEventListener('loadedmetadata', onLoadedMetaData);
                 video.removeEventListener('play', onPlay);
                 video.removeEventListener('ended', onEnded);
                 video.removeEventListener('abort', onVideoAbort);
                 video.removeEventListener('error', onVideoError);
                 video.removeEventListener('canplay', onCanPlay);
                 video.removeEventListener('timeupdate', onTimeUpdate);
-                video.removeEventListener('stalled', onTimeUpdate);
+                video.removeEventListener('stalled', onVideoError);
             }
 
             video.setAttribute("url", data.url);
@@ -700,6 +690,12 @@
                 }
                 me.currentVideo.pause();
             }
+			
+			if(me.videos[me.nextIndex]){
+				if(me.videos[me.nextIndex].segErrTimer){
+					clearTimeout(me.videos[me.nextIndex].segErrTimer);
+				}
+			}
 
             me.seekTime = currentTime;
 
