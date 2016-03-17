@@ -517,7 +517,7 @@
 
                 video.removeAttribute("ready");
 
-                var retryCount = 1;
+                var retryCount = 0;
                 video.oAjax = new XMLHttpRequest();
 
                 video.oAjax.open("GET", video.src, true);
