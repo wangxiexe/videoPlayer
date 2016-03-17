@@ -487,9 +487,11 @@
                         me.videos[me.nextIndex].play();
                     } else {
                         me.showLoading();
+                        me.retryPlayTimer && clearInterval(me.retryPlayTimer);
                         me.retryPlayTimer = setInterval(function () {
-
+                            
                             var _isReady = me.videos[me.nextIndex].getAttribute("ready");
+                            me.log("waiting for id#"+me.nextIndex+", ready#"+_isReady);
                             var _lastError = me.videos[me.nextIndex].getAttribute("lastVideoBroken");
                             if (_isReady == "1") {
                                 clearInterval(me.retryPlayTimer);
@@ -610,6 +612,20 @@
             video.addEventListener('canplay', onCanPlay);
             video.addEventListener('timeupdate', onTimeUpdate);
             video.addEventListener('stalled', onVideoError);
+
+            video.addEventListener('durationchange', function(){
+                me.log("durationchange#"+this.id);
+            });
+            video.addEventListener('loadedmetadata', function(){
+                me.log("loadedmetadata#"+this.id);
+            });
+            video.addEventListener('loadeddata', function(){
+                me.log("loadeddata#"+this.id);
+            });
+            video.addEventListener('canplaythrough', function(){
+                me.log("canplaythrough#"+this.id);
+            });
+
 
             video.removeEvent = function () {
                 video.removeEventListener('loadstart', onLoadStart);
