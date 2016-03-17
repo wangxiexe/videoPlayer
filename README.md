@@ -99,6 +99,10 @@
 
 - `specifiedResolution`  自定义分辨率
 
+- `isBrowserCache`  是否启用浏览器缓存,默认(false)不缓存
+
+- `isDebug`  是否启用日志,默认(false)不启用
+
 ### 声音控制
 
 	//示例

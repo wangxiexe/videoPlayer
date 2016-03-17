@@ -30,7 +30,8 @@
                 indexErrorRetryNum: 5, //索引请求错误重试次数
                 segErrorRetryNum: 5, //分片请求错误重试次数
                 throwErrorInfoCallBack: null, //错误信息回调
-                isDebug: false
+                isDebug: false,
+                isBrowserCache: false//是否启用浏览器缓存
             }
             if (options)
                 this.extend(this.options, options);
@@ -386,7 +387,7 @@
             };
         },
 
-        createVideoPlay: function (data) {
+        createVideoPlay: function (data, videoIndex) {
             if (!data) return;
             var me = this;
             var video = document.createElement('video'),
@@ -477,7 +478,11 @@
                     }
                 }
 
-                me.log("end#" + this.id)
+                me.log("end#" + this.id + ", to delete id#" + (me.nextIndex - 1))
+
+                if (!me.isBrowserCache) {
+                    me.createVideoPlay(me.filesInfo[me.nextIndex - 1], me.nextIndex - 1);
+                }
 
                 if (me.nextIndex in me.videos) {
 
@@ -489,9 +494,9 @@
                         me.showLoading();
                         me.retryPlayTimer && clearInterval(me.retryPlayTimer);
                         me.retryPlayTimer = setInterval(function () {
-                            
+
                             var _isReady = me.videos[me.nextIndex].getAttribute("ready");
-                            me.log("waiting for id#"+me.nextIndex+", ready#"+_isReady);
+                            me.log("waiting for id#" + me.nextIndex + ", ready#" + _isReady);
                             var _lastError = me.videos[me.nextIndex].getAttribute("lastVideoBroken");
                             if (_isReady == "1") {
                                 clearInterval(me.retryPlayTimer);
@@ -613,17 +618,17 @@
             video.addEventListener('timeupdate', onTimeUpdate);
             video.addEventListener('stalled', onVideoError);
 
-            video.addEventListener('durationchange', function(){
-                me.log("durationchange#"+this.id);
+            video.addEventListener('durationchange', function () {
+                me.log("durationchange#" + this.id);
             });
-            video.addEventListener('loadedmetadata', function(){
-                me.log("loadedmetadata#"+this.id);
+            video.addEventListener('loadedmetadata', function () {
+                me.log("loadedmetadata#" + this.id);
             });
-            video.addEventListener('loadeddata', function(){
-                me.log("loadeddata#"+this.id);
+            video.addEventListener('loadeddata', function () {
+                me.log("loadeddata#" + this.id);
             });
-            video.addEventListener('canplaythrough', function(){
-                me.log("canplaythrough#"+this.id);
+            video.addEventListener('canplaythrough', function () {
+                me.log("canplaythrough#" + this.id);
             });
 
 
@@ -641,7 +646,12 @@
             video.setAttribute("url", data.url);
 
             (function canplaythrough() {
-                me.videos[data.index] = this;
+                if (!videoIndex) {
+                    me.videos[data.index] = this;
+                }
+                else {
+                    me.videos.splice(videoIndex, 1, this);
+                }
                 if ((!me.currentVideo || me.currentVideo.ended) && data.index === me.nextIndex) {
                     this.src = this.getAttribute("url");
                     this.load();
@@ -706,12 +716,12 @@
                 }
                 me.currentVideo.pause();
             }
-			
-			if(me.videos[me.nextIndex]){
-				if(me.videos[me.nextIndex].segErrTimer){
-					clearTimeout(me.videos[me.nextIndex].segErrTimer);
-				}
-			}
+
+            if (me.videos[me.nextIndex]) {
+                if (me.videos[me.nextIndex].segErrTimer) {
+                    clearTimeout(me.videos[me.nextIndex].segErrTimer);
+                }
+            }
 
             me.seekTime = currentTime;
 
