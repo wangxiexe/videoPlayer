@@ -117,7 +117,7 @@
     var createPlayer = function(videoUrl){
         var option= {
             container      : "video-ctn",
-            liveUrl        : videoUrl,
+            url        : videoUrl,
             isLoop         : false,
             isLive         : false,
             defaultResolution: "640x480",

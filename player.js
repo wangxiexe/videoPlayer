@@ -44,28 +44,27 @@
             this.screenBtn = this.getID(this.options.screenBtn);
             this.progressCtn = this.getID(this.options.progressCtn);
             this.progressBar = this.getID(this.options.progressBar);
-            this.manifest = this.options.liveUrl;
+            this.manifest = this.options.url;
             this.loadingContainer = this.getID(this.options.loadingContainerID);
             this.defaultImage = this.options.defaultImage || null;
             this.isDebug = this.options.isDebug || false;
 
             //如果是PC端、非safari、且URL是直播形式URL
-            if (this.options.url === "") {
-                this.resolution = this.options.defaultResolution;
-                this.playWidth = parseInt(this.resolution.split("x")[0]);
-                this.playHeight = parseInt(this.resolution.split("x")[1]);
+            
+            this.resolution = this.options.defaultResolution;
+            this.playWidth = parseInt(this.resolution.split("x")[0]);
+            this.playHeight = parseInt(this.resolution.split("x")[1]);
 
-                this.canvas = document.createElement('canvas');
-                this.context = this.canvas.getContext('2d');
-                this.canvas.width = this.playWidth;
-                this.canvas.height = this.playHeight;
-                if (this.container) {
-                    this.container.appendChild(this.canvas); //加载默认图片
-                }
-
-                this.setDefault();
-            } else {
+            this.canvas = document.createElement('canvas');
+            this.context = this.canvas.getContext('2d');
+            this.canvas.width = this.playWidth;
+            this.canvas.height = this.playHeight;
+            if (this.container) {
+                this.container.appendChild(this.canvas); //加载默认图片
             }
+
+            this.setDefault();
+           
         },
 
         log: function (str) {
