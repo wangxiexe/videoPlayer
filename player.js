@@ -468,6 +468,11 @@
             };
 
             var onEnded = function () {
+                me.log("end#" + this.id + ", to delete id#" + (me.nextIndex - 1));
+                if (!me.isBrowserCache) {
+                    me.createVideoPlay(me.filesInfo[me.nextIndex - 1], me.nextIndex - 1);
+                }
+
                 if (me.nextIndex >= me.sentVideos) {
                     if (!me.options.isLoop) {
                         me.resetVideo();
@@ -475,12 +480,6 @@
                     } else {
                         me.nextIndex = 0;
                     }
-                }
-
-                me.log("end#" + this.id + ", to delete id#" + (me.nextIndex - 1))
-
-                if (!me.isBrowserCache) {
-                    me.createVideoPlay(me.filesInfo[me.nextIndex - 1], me.nextIndex - 1);
                 }
 
                 if (me.nextIndex in me.videos) {
@@ -849,6 +848,7 @@
                 return false;
             }
             if (me.isEnded) {
+                me.videos[0].src =  me.videos[0].getAttribute("url");
                 me.videos[0].load();
                 me.isEnded = false;
             }
